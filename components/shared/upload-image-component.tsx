@@ -9,8 +9,7 @@ import { z } from "zod";
 import { createProductSchema } from "@/lib/validation";
 
 export default function UploadImageComponent() {
-  const form =
-    useFormContext<z.infer<ReturnType<typeof createProductSchema>>>();
+  const form = useFormContext<z.infer<typeof createProductSchema>>();
 
   const [imageCover, setImageCover] = React.useState<File | null>(null);
   const [images, setImages] = React.useState<(File | null)[]>([
