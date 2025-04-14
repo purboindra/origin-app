@@ -3,29 +3,63 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { CategoryOptions } from "./category-options";
 import { Button } from "../ui/button";
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { createProductSchema } from "@/lib/validation";
+import { FormControl, FormField, FormItem } from "../ui/form";
+import CalorOptionsForm from "./color-options-form";
 
 export default function ProductInformationForm() {
+
+  const form = useFormContext<z.infer<typeof createProductSchema>>();
+
   return (
     <div className="flex flex-1 flex-col space-y-4">
       <h1 className="text-4xl font-semibold text-blue-800">
         Keterangan Produk
       </h1>
-      <Input placeholder="Nama Produk" />
+     <FormField
+     control={form.control}
+     name="name"
+     render={({field})=>(
+      <FormItem>
+        <FormControl>
+        <Input placeholder="Nama Produk" {...field} />
+        </FormControl>
+      </FormItem>
+     )}
+     />
       <div className="flex space-x-4">
-        <Input placeholder="Rp" />
-        <Input placeholder="Stok" />
+       <FormField
+       control={form.control}
+       name="price"
+       render={({field})=>(
+        <FormItem>
+          <FormControl>
+          <Input placeholder="Rp"  {...field}/>
+          </FormControl>
+        </FormItem>
+       )}
+
+       />
+        <FormField
+       control={form.control}
+       name="stock"
+       render={({field})=>(
+        <FormItem>
+          <FormControl>
+          <Input placeholder="Stok" {...field} />
+
+          </FormControl>
+        </FormItem>
+       )}
+
+       />
       </div>
       <Textarea placeholder="Deskripsi" maxLength={12} />
       <div className="flex space-x-12">
         <CategoryOptions />
-        <div className="flex flex-col space-y-1">
-          <h1 className="text-xl font-medium text-blue-800/50">
-            Warna Tersedia
-          </h1>
-          <div className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center">
-            <Plus className="w-6 h-6 text-white" />
-          </div>
-        </div>
+<CalorOptionsForm/>
       </div>
       <Button className="bg-red-500 h-[56px] mt-11">Simpan</Button>
     </div>
