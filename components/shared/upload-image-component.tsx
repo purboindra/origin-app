@@ -1,13 +1,14 @@
 "use client";
 
 import { Camera, Plus } from "lucide-react";
-import { Input } from "../ui/input";
 import React from "react";
 import Image from "next/image";
 import { useFormContext, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { createProductSchema } from "@/lib/validation";
-import { FormField } from "../ui/form";
+import { FormControl, FormField, FormItem } from "../ui/form";
+import VariantImagesForm from "./variant-images-form";
+import { Input } from "../ui/input";
 
 export default function UploadImageComponent() {
   const form = useFormContext<z.infer<typeof createProductSchema>>();
@@ -18,11 +19,6 @@ export default function UploadImageComponent() {
     defaultValue: undefined,
   });
 
-  const images = useWatch({
-    control: form.control,
-    name: "images",
-    defaultValue: Array.from({ length: 3 }, () => undefined),
-  });
 
   React.useEffect(() => {
     if (image instanceof File) {
@@ -35,106 +31,66 @@ export default function UploadImageComponent() {
     <div className="flex flex-1 flex-col">
       <h1 className="text-4xl font-semibold text-blue-800">Upload Gambar</h1>
       <div className="mt-8 flex flex-col gap-6">
-        <FormField
-          control={form.control}
-          name={"thumbnail_image"}
-          render={({ field: { onChange } }) => (
-            <div className="relative w-96 h-96">
-              {image ? (
-                <label htmlFor="image-cover">
-                  <Image
-                    src={
-                      image instanceof File
-                        ? URL.createObjectURL(image)
-                        : typeof image === "string"
-                        ? image
-                        : ""
-                    }
-                    alt="Thumbnail Image"
-                    fill
-                    className="object-cover rounded-md"
-                  />
-                  <Input
-                    type="file"
-                    id="image-cover"
-                    className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        onChange(e.target.files[0]);
-                      }
-                    }}
-                  />
-                </label>
-              ) : (
-                <div>
-                  <Input
-                    type="file"
-                    id="image-cover"
-                    className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        onChange(e.target.files[0]);
-                      }
-                    }}
-                  />
-                  <Camera size={140} className="text-blue-800" />
-                </div>
-              )}
+      <FormField
+  control={form.control}
+  name="thumbnail_image"
+  render={({ field: { onChange } }) => (
+    <FormItem>
+      <FormControl>
+        <div className="relative w-96 h-96">
+          {image ? (
+            <div>
+              <Image
+                src={
+                  image instanceof File
+                    ? URL.createObjectURL(image)
+                    : typeof image === "string"
+                    ? image
+                    : ""
+                }
+                alt="Thumbnail Image"
+                fill
+                className="object-cover rounded-md"
+              />
+              <label htmlFor="thumbnail_image" className="absolute inset-0 z-10 cursor-pointer" />
+              <Input
+                type="file"
+                id="thumbnail_image"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    onChange(e.target.files[0]);
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex w-full h-full items-center justify-center bg-gray-200 rounded-md">
+              <label htmlFor="thumbnail_image" className="cursor-pointer">
+                <Camera size={140} className="text-blue-800" />
+                <Input
+                type="file"
+                id="thumbnail_image"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    onChange(e.target.files[0]);
+                  }
+                }}
+              />
+              </label>
+             
             </div>
           )}
-        />
-        <div className="w-full flex space-x-3 items-center">
-          <div className="flex w-96 justify-between">
-            {images?.map((_, index) => {
-              return (
-                <label
-                  htmlFor={`images-${index}`}
-                  key={index}
-                  className="flex w-28 h-28 bg-gray-200 rounded-md items-center justify-center"
-                >
-                  {images[index] ? (
-                    <div className="relative w-full h-full">
-                      {images[index] instanceof File ? (
-                        <Image
-                          src={URL.createObjectURL(images[index])}
-                          alt={images[index].name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <Image
-                          src={images[index]}
-                          alt={images[index]}
-                          fill
-                          className="object-cover"
-                        />
-                      )}
-                    </div>
-                  ) : (
-                    <div>
-                      <Input
-                        type="file"
-                        id={`images-${index}`}
-                        className="hidden"
-                        onChange={(e) => {
-                          if (e.target.files) {
-                            const newImages = [...images];
-                            newImages[index] = e.target.files[0];
-                            form.setValue("images", newImages);
-                          }
-                        }}
-                      />
-                      <Camera size={48} className="text-blue-800" />
-                    </div>
-                  )}
-                </label>
-              );
-            })}
-          </div>
-          <div className="w-12 h-12 bg-blue-800 rounded-md flex items-center justify-center">
-            <Plus size={18} className="text-white" />
-          </div>
         </div>
+      </FormControl>
+    </FormItem>
+  )}
+/>
+
+{/* VARIANT IMAGES */}
+
+        <VariantImagesForm/>
       </div>
     </div>
   );
