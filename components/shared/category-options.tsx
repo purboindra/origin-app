@@ -18,6 +18,9 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
+import { z } from "zod";
+import { createProductSchema } from "@/lib/validation";
+import { useFormContext } from "react-hook-form";
 
 const frameworks = [
   {
@@ -43,8 +46,12 @@ const frameworks = [
 ];
 
 export function CategoryOptions() {
+
+    const form = useFormContext<z.infer<typeof createProductSchema>>();
+  
+    const value = form.watch("category");
+
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,7 +79,7 @@ export function CategoryOptions() {
                   key={framework.value}
                   value={framework.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  form.setValue("category",currentValue === value ? "" : currentValue)
                     setOpen(false);
                   }}
                 >
