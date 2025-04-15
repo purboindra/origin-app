@@ -12,7 +12,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function createProduct(formData: FormData) {
+export async function createProduct(prevState: any, formData: FormData) {
   const thumbnail_image = formData.get("thumbnail_image");
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
@@ -113,8 +113,18 @@ export async function createProduct(formData: FormData) {
     });
 
     revalidateTag("products");
+
+    return {
+      success: true,
+      message: "Product created successfully",
+      timestamp: Date.now(),
+    };
   } catch (error) {
     console.error("Error create product", error);
-    throw error;
+    return {
+      success: false,
+      message: "Product created successfully",
+      timestamp: Date.now(),
+    };
   }
 }

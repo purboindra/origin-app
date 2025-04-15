@@ -22,32 +22,13 @@ import {
 import { z } from "zod";
 import { createProductSchema } from "@/lib/validation";
 import { useFormContext } from "react-hook-form";
-
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
+import { CategoryInterface } from "@/types";
 
 export function CategoryOptions() {
-  const { data, error, isLoading } = useSWR("/api/categories", fetcher);
+  const { data, error, isLoading } = useSWR<CategoryInterface[]>(
+    "/api/categories",
+    fetcher
+  );
 
   const form = useFormContext<z.infer<typeof createProductSchema>>();
 
@@ -69,7 +50,7 @@ export function CategoryOptions() {
           className="w-[200px] justify-between text-xl font-medium text-blue-800/50"
         >
           {value
-            ? data.data.find((framework) => framework.value === value)?.label
+            ? data.find((framework) => framework.name === value)?.name
             : "Kategori"}
           <ChevronsUpDown className="opacity-50" />
           {value.length > 0 && (
@@ -83,7 +64,7 @@ export function CategoryOptions() {
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
-              {data.data.map((framework) => (
+              {data.map((framework) => (
                 <CommandItem
                   key={framework.name}
                   value={framework.name}
@@ -99,7 +80,7 @@ export function CategoryOptions() {
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      value === framework.name ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

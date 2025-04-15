@@ -7,8 +7,21 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createProductSchema } from "@/lib/validation";
 import { createProduct } from "@/action/products.action";
+import React, { useActionState } from "react";
+import { toast } from "sonner";
+
+const initialState = {
+  message: "",
+  timestamp: 0,
+  success: false,
+};
 
 export default function CreateProductsContent() {
+  const [state, dispatch, pending] = useActionState(
+    createProduct,
+    initialState
+  );
+
   const form = useForm<z.infer<typeof createProductSchema>>({
     resolver: zodResolver(createProductSchema),
     defaultValues: {
@@ -41,8 +54,18 @@ export default function CreateProductsContent() {
       }
     }
 
-    createProduct(formData);
+    dispatch(formData);
   };
+
+  React.useEffect(() => {
+    if (state.message && state.timestamp) {
+      if (!state.success) {
+        toast.error(state.message);
+      } else {
+        toast.success(state.message);
+      }
+    }
+  }, [state.message, state.timestamp, state.success]);
 
   return (
     <FormProvider {...form}>
