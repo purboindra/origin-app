@@ -6,7 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createProductSchema } from "@/lib/validation";
-import { createPost } from "@/action/products.action";
+import { createProduct } from "@/action/products.action";
 
 export default function CreateProductsContent() {
   const form = useForm<z.infer<typeof createProductSchema>>({
@@ -39,7 +39,7 @@ export default function CreateProductsContent() {
       }
     }
 
-    createPost(formData);
+    createProduct(formData);
   };
 
   return (
