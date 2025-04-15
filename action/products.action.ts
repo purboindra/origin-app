@@ -47,7 +47,6 @@ export async function createProduct(formData: FormData) {
       category,
       colors,
       description,
-      images,
       name,
       price,
       stock,
@@ -75,8 +74,6 @@ export async function createProduct(formData: FormData) {
       }
     }
 
-    console.log("images length", images.length);
-
     let imageIndex = 0;
 
     while (formData.has(`images.${imageIndex}`)) {
@@ -100,8 +97,6 @@ export async function createProduct(formData: FormData) {
           images_url.push(url);
         }
       }
-
-      console.log("image index", imageIndex, image);
 
       imageIndex++;
     }

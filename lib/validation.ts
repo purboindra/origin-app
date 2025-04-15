@@ -16,7 +16,5 @@ export const createProductSchema = z.object({
   }),
   colors: z.array(z.string()).optional(),
   thumbnail_image: z.union([z.string(), z.instanceof(File)]).optional(),
-  images: z
-    .array(z.union([z.string(), z.instanceof(File)]).optional())
-    .default([]),
+  images: z.array(z.union([z.string(), z.instanceof(File)])).optional(),
 });

@@ -32,10 +32,12 @@ export default function CreateProductsContent() {
 
     const variantImages = form.getValues("images");
 
-    for (let i = 0; i < variantImages.length; i++) {
-      const image = variantImages[i];
-      if (image instanceof File) {
-        formData.set(`images.${i}`, image);
+    if (variantImages) {
+      for (let i = 0; i < variantImages.length; i++) {
+        const image = variantImages[i];
+        if (image instanceof File) {
+          formData.set(`images.${i}`, image);
+        }
       }
     }
 
