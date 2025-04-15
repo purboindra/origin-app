@@ -16,9 +16,14 @@ export default function VariantImagesForm() {
     name: "images",
     defaultValue: Array.from({ length: 3 }, () => ""),
   });
+
+  const handleAddImageSlot = () => {
+    form.setValue("images", [...(images ?? []), ""]);
+  };
+
   return (
-    <div className="w-full flex space-x-3 items-center">
-      <div className="flex w-96 justify-between">
+    <div className=" flex space-x-3 items-center">
+      <div className="flex space-x-3 overflow-x-auto">
         {images?.map((_, index) => {
           return (
             <FormField
@@ -71,9 +76,14 @@ export default function VariantImagesForm() {
           );
         })}
       </div>
-      <div className="w-12 h-12 bg-blue-800 rounded-md flex items-center justify-center">
+
+      <button
+        className="w-12 h-12 bg-blue-800 rounded-md flex items-center justify-center hover:cursor-pointer"
+        type="button"
+        onClick={() => handleAddImageSlot()}
+      >
         <Plus size={18} className="text-white" />
-      </div>
+      </button>
     </div>
   );
 }
