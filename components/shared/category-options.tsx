@@ -46,10 +46,9 @@ const frameworks = [
 ];
 
 export function CategoryOptions() {
+  const form = useFormContext<z.infer<typeof createProductSchema>>();
 
-    const form = useFormContext<z.infer<typeof createProductSchema>>();
-  
-    const value = form.watch("category");
+  const value = form.watch("category");
 
   const [open, setOpen] = React.useState(false);
 
@@ -66,6 +65,9 @@ export function CategoryOptions() {
             ? frameworks.find((framework) => framework.value === value)?.label
             : "Kategori"}
           <ChevronsUpDown className="opacity-50" />
+          {value.length > 0 && (
+            <input type="hidden" name="category" value={value} />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
@@ -79,7 +81,10 @@ export function CategoryOptions() {
                   key={framework.value}
                   value={framework.value}
                   onSelect={(currentValue) => {
-                  form.setValue("category",currentValue === value ? "" : currentValue)
+                    form.setValue(
+                      "category",
+                      currentValue === value ? "" : currentValue
+                    );
                     setOpen(false);
                   }}
                 >

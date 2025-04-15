@@ -51,7 +51,13 @@ export default function ProductInformationForm() {
           )}
         />
       </div>
-      <Textarea placeholder="Deskripsi" maxLength={12} />
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <Textarea placeholder="Deskripsi" maxLength={12} {...field} />
+        )}
+      />
       <div className="flex space-x-12">
         <CategoryOptions />
         <CalorOptionsForm />

@@ -14,9 +14,9 @@ export const createProductSchema = z.object({
   category: z.string().min(1, {
     message: "Product category is required",
   }),
-  colors: z.array(z.string()).min(1, {
-    message: "Product colors is required",
-  }),
+  colors: z.array(z.string()).optional(),
   thumbnail_image: z.union([z.string(), z.instanceof(File)]).optional(),
-  images: z.array(z.union([z.string(), z.instanceof(File)]).optional()),
+  images: z
+    .array(z.union([z.string(), z.instanceof(File)]).optional())
+    .default([]),
 });

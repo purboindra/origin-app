@@ -1,6 +1,8 @@
 "use server";
 
+import { getDb } from "@/lib/db";
 import { createProductSchema } from "@/lib/validation";
+import { File } from "buffer";
 import { v2 as cloudinary } from "cloudinary";
 import { revalidateTag } from "next/cache";
 
@@ -10,18 +12,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
 export async function createProduct(formData: FormData) {
-
-
-  const thumbnail_image = formData.get("thumbnail_image") as File;
-  const images = formData.getAll("images") as File[];
+  const thumbnail_image = formData.get("thumbnail_image");
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
-  const price = formData.get("price") as string;
-  const stock = formData.get("stock") as string;
+  const price = Number.parseFloat(formData.get("price") as string);
+  const stock = Number.parseFloat(formData.get("stock") as string);
   const category = formData.get("category") as string;
   const colors = formData.getAll("colors") as string[];
+
+  const fileFormData = new FormData();
 
   const validateFields = createProductSchema.safeParse({
     name,
@@ -30,77 +30,96 @@ export async function createProduct(formData: FormData) {
     stock,
     category,
     colors,
-thumbnail_image,
-images
+    thumbnail_image,
   });
 
-  if(!validateFields.success){
-    throw new Error(validateFields.error.message)
+  if (!validateFields.success) {
+    throw new Error(validateFields.error.message);
   }
 
   try {
+    const db = await getDb();
 
     let thumbnail_image_url = "";
-    let images_url: string[] = [];
+    const images_url: string[] = [];
 
     const {
       category,
       colors,
       description,
-      images, 
+      images,
       name,
       price,
-      stock,thumbnail_image
-    }=validateFields.data
+      stock,
+      thumbnail_image,
+    } = validateFields.data;
 
-    if(thumbnail_image && thumbnail_image instanceof File){
-      const result =  await fetch(
+    if (
+      thumbnail_image &&
+      thumbnail_image instanceof File &&
+      thumbnail_image.size > 0
+    ) {
+      const result = await fetch(
         "http://localhost:3000/api/products/upload-image",
         {
           method: "POST",
           body: (() => {
-            const f = new FormData();
-            f.append("file", thumbnail_image);
-            return f;
+            fileFormData.append("file", thumbnail_image);
+            return fileFormData;
           })(),
-        });
-
-          if(result.ok){
-            thumbnail_image_url = (await result.json()).url
-          }
-
-    }
-
-    if(images && images.length > 0){
-      for (let i = 0;i <images.length; i++){
-        const image = images[i];
-        if(image instanceof File){
-          const result =  await fetch(
-            "http://localhost:3000/api/products/upload-image",
-            {
-              method: "POST",
-              body: (() => {
-                const f = new FormData();
-                f.append("file", image);
-                return f;
-              })(),
-            });
-    
-              if(result.ok){
-              const url = (await result.json()).url
-              images_url.push(url) 
-              }
         }
+      );
+
+      if (result.ok) {
+        thumbnail_image_url = (await result.json()).url;
       }
     }
 
-    
+    console.log("images length", images.length);
+
+    let imageIndex = 0;
+
+    while (formData.has(`images.${imageIndex}`)) {
+      fileFormData.delete("file");
+
+      const image = formData.get(`images.${imageIndex}`);
+      if (image instanceof File && image.size > 0) {
+        const result = await fetch(
+          "http://localhost:3000/api/products/upload-image",
+          {
+            method: "POST",
+            body: (() => {
+              fileFormData.append("file", image);
+              return fileFormData;
+            })(),
+          }
+        );
+
+        if (result.ok) {
+          const url = (await result.json()).url;
+          images_url.push(url);
+        }
+      }
+
+      console.log("image index", imageIndex, image);
+
+      imageIndex++;
+    }
+
+    await db.collection("products").insertOne({
+      name,
+      description,
+      category,
+      colors,
+      price,
+      stock,
+      images: images_url,
+      thumbnail_image: thumbnail_image_url,
+    });
 
     revalidateTag("products");
-
-    
   } catch (error) {
-    console.error("Error create product",error);
-    throw error
+    console.error("Error create product", error);
+    throw error;
   }
 }
