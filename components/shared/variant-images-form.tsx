@@ -14,7 +14,7 @@ export default function VariantImagesForm() {
   const images = useWatch({
     control: form.control,
     name: "images",
-    defaultValue: Array.from({ length: 3 }, () => undefined),
+    defaultValue: Array.from({ length: 3 }, () => ""),
   });
   return (
     <div className="w-full flex space-x-3 items-center">
