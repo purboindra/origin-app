@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,23 +47,29 @@ const frameworks = [
 ];
 
 export function CategoryOptions() {
+  const { data, error, isLoading } = useSWR("/api/categories", fetcher);
+
   const form = useFormContext<z.infer<typeof createProductSchema>>();
 
   const value = form.watch("category");
 
   const [open, setOpen] = React.useState(false);
 
+  if (error) return <div>Failed to load categories</div>;
+  if (!data) return <div>Loading...</div>;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="h-16">
         <Button
+          disabled={isLoading}
           variant="outline"
           role="combobox"
           aria-expanded={open}
           className="w-[200px] justify-between text-xl font-medium text-blue-800/50"
         >
           {value
-            ? frameworks.find((framework) => framework.value === value)?.label
+            ? data.data.find((framework) => framework.value === value)?.label
             : "Kategori"}
           <ChevronsUpDown className="opacity-50" />
           {value.length > 0 && (
@@ -76,10 +83,10 @@ export function CategoryOptions() {
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {data.data.map((framework) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={framework.name}
+                  value={framework.name}
                   onSelect={(currentValue) => {
                     form.setValue(
                       "category",
@@ -88,7 +95,7 @@ export function CategoryOptions() {
                     setOpen(false);
                   }}
                 >
-                  {framework.label}
+                  {framework.name}
                   <Check
                     className={cn(
                       "ml-auto",

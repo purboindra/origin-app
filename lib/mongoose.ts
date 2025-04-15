@@ -13,7 +13,7 @@ export const client = new MongoClient(uri, {
 let isConnected = false;
 
 export async function runMongoDB() {
-  if (!isConnected) {
+  if (isConnected === false) {
     try {
       await client.connect();
       await client.db("originapp").command({ ping: 1 });

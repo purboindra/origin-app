@@ -1,12 +1,12 @@
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { CategoryOptions } from "./category-options";
-import { Button } from "../ui/button";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { createProductSchema } from "@/lib/validation";
 import { FormControl, FormField, FormItem } from "../ui/form";
 import CalorOptionsForm from "./color-options-form";
+import { SubmitButtonCreatePrudct } from "./submit-button-create-prudct";
 
 export default function ProductInformationForm() {
   const form = useFormContext<z.infer<typeof createProductSchema>>();
@@ -62,7 +62,7 @@ export default function ProductInformationForm() {
         <CategoryOptions />
         <CalorOptionsForm />
       </div>
-      <Button className="bg-red-500 h-[56px] mt-11">Simpan</Button>
+      <SubmitButtonCreatePrudct />
     </div>
   );
 }
