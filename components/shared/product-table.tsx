@@ -26,6 +26,8 @@ import {
 import Image from "next/image";
 import { Edit, Trash } from "lucide-react";
 import { ProductInterface } from "@/types";
+import { deleteProduct } from "@/action/products.action";
+import { DeleteProduct } from "./delete-product";
 
 export const productColumns: ColumnDef<ProductInterface>[] = [
   {
@@ -100,9 +102,12 @@ export const productColumns: ColumnDef<ProductInterface>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex w-20 h-10 bg-gray-300/20 border border-gray-400 rounded-sm justify-between items-center">
-          <Edit className="w-auto h-auto text-gray-400 p-1 shrink-0" />
+          <Edit
+            className="w-auto h-auto text-gray-400 p-1 shrink-0"
+            onClick={() => alert("TESTT")}
+          />
           <hr className="w-[1px] h-full border border-gray-400" />
-          <Trash className="w-auto h-auto text-red-500 p-1 shrink-0" />
+          <DeleteProduct id={row.original.id} />
         </div>
       );
     },

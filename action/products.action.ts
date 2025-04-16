@@ -5,7 +5,7 @@ import { createProductSchema } from "@/lib/validation";
 import { FetchProductsParams, ProductInterface, ProductsParams } from "@/types";
 import { File } from "buffer";
 import { v2 as cloudinary } from "cloudinary";
-import { Filter, FindOptions } from "mongodb";
+import { Filter, FindOptions, ObjectId } from "mongodb";
 import { revalidateTag } from "next/cache";
 
 cloudinary.config({
@@ -179,6 +179,50 @@ export async function fetchProducts(params: FetchProductsParams) {
       data: null,
       message: "Error fetch products",
       success: false,
+    };
+  }
+}
+
+export async function deleteProduct(prevState: any, formData: FormData) {
+  console.log("Delete product EZZZ");
+
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      return {
+        message: "Product not found",
+        success: false,
+        timestamp: Date.now(),
+      };
+    }
+
+    const db = await getDb();
+
+    const result = await db.collection("products").deleteOne({
+      _id: new ObjectId(id || ""),
+    });
+
+    if (result.deletedCount === 0) {
+      return {
+        message: "Product not found",
+        success: false,
+      };
+    }
+
+    revalidateTag("products");
+
+    return {
+      message: "Success delete product!",
+      success: true,
+      timestamp: Date.now(),
+    };
+  } catch (error) {
+    console.error("Error delete product", error);
+    return {
+      message: "Error delete product",
+      success: false,
+      timestamp: Date.now(),
     };
   }
 }
