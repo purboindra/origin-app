@@ -2,6 +2,7 @@
 
 import { getDb } from "@/lib/db";
 import { createProductSchema } from "@/lib/validation";
+import { ProductInterface } from "@/types";
 import { File } from "buffer";
 import { v2 as cloudinary } from "cloudinary";
 import { revalidateTag } from "next/cache";
@@ -125,6 +126,40 @@ export async function createProduct(prevState: any, formData: FormData) {
       success: false,
       message: "Product created successfully",
       timestamp: Date.now(),
+    };
+  }
+}
+
+export async function fetchProducts() {
+  try {
+    const db = await getDb();
+
+    const result = await db.collection("products").find({}).toArray();
+
+    if (result.length === 0) {
+      return {
+        data: null,
+        message: "No products found",
+        success: false,
+      };
+    }
+
+    const products = result.map((data) => ({
+      ...data,
+      id: data._id.toString(),
+    })) as ProductInterface[];
+
+    return {
+      data: products,
+      message: "Success fetch products",
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error fetch products", error);
+    return {
+      data: null,
+      message: "Error fetch products",
+      success: false,
     };
   }
 }
