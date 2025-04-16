@@ -25,91 +25,16 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 import { Edit, Trash } from "lucide-react";
+import { ProductInterface } from "@/types";
 
-export type Product = {
-  id: number;
-  image: string;
-  name: string;
-  price: number;
-  category: string;
-  stock: number;
-  colors: string[];
-};
-
-const data: Product[] = [
+export const productColumns: ColumnDef<ProductInterface>[] = [
   {
-    id: 1,
-    image: "/iphone_16.svg",
-    name: "Apple iPhone 16 Plus",
-    category: "Mobile",
-    price: 14999000,
-    stock: 100,
-    colors: ["#a3bffa", "#dbeafe", "#f0abfc", "#d1d5db", "#000000"],
-  },
-  {
-    id: 2,
-    image: "/iphone_16.svg",
-    name: "Apple iPhone 16 Pro",
-    category: "Mobile",
-    price: 18499000,
-    stock: 100,
-    colors: ["#0f0f0f", "#ffffff", "#d4d4d4", "#cbd5e1"],
-  },
-  {
-    id: 3,
-    image: "/iphone_16.svg",
-    name: "Apple iPhone 16 E",
-    category: "Mobile",
-    price: 12499000,
-    stock: 100,
-    colors: ["#f5f5f5", "#e5e7eb"],
-  },
-  {
-    id: 4,
-    image: "/iphone_16.svg",
-    name: "Apple iPhone 15 Pro",
-    category: "Mobile",
-    price: 18999000,
-    stock: 100,
-    colors: ["#1f2937", "#4b5563", "#9ca3af"],
-  },
-  {
-    id: 5,
-    image: "/iphone_16.svg",
-    name: "Apple Watch Ultra 2 with Ocean Band",
-    category: "Watch",
-    price: 14499000,
-    stock: 100,
-    colors: ["#d6d3d1", "#4b5563", "#0f172a"],
-  },
-  {
-    id: 6,
-    image: "/iphone_16.svg",
-    name: "Apple Watch Ultra 2 with Trail Loop",
-    category: "Watch",
-    price: 14498000,
-    stock: 100,
-    colors: ["#cbd5e1", "#6b7280", "#111827"],
-  },
-  {
-    id: 7,
-    image: "/iphone_16.svg",
-    name: "AirPods Pro (2nd gen) with USB-C",
-    category: "Music",
-    price: 3999000,
-    stock: 100,
-    colors: ["#f9fafb"],
-  },
-];
-
-export const productColumns: ColumnDef<Product>[] = [
-  {
-    accessorKey: "image",
+    accessorKey: "thumbnail_image",
     header: "Gambar",
     cell: ({ row }) => (
       <div className="w-24 h-16 relative">
         <Image
-          src={row.getValue("image")}
+          src={row.getValue("thumbnail_image")}
           alt={row.getValue("name")}
           fill
           className="object-cover rounded-md"
@@ -173,8 +98,6 @@ export const productColumns: ColumnDef<Product>[] = [
     accessorKey: "actions",
     header: "Aksi",
     cell: ({ row }) => {
-      const product = row.original;
-
       return (
         <div className="flex w-20 h-10 bg-gray-300/20 border border-gray-400 rounded-sm justify-between items-center">
           <Edit className="w-auto h-auto text-gray-400 p-1 shrink-0" />
@@ -186,7 +109,11 @@ export const productColumns: ColumnDef<Product>[] = [
   },
 ];
 
-export function DataTableDemo() {
+interface DataTableDemoProps {
+  products: ProductInterface[];
+}
+
+export function DataTableDemo({ products }: DataTableDemoProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -196,7 +123,7 @@ export function DataTableDemo() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: products,
     columns: productColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -237,32 +164,18 @@ export function DataTableDemo() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={productColumns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </div>
