@@ -22,8 +22,8 @@ export default function VariantImagesForm() {
   };
 
   return (
-    <div className=" flex space-x-3 items-center">
-      <div className="flex space-x-3 overflow-x-auto">
+    <div className=" flex w-full overflow-x-auto space-x-3 items-center">
+      <div className="flex space-x-3 items-center">
         {images?.map((_, index) => {
           return (
             <FormField
@@ -75,15 +75,16 @@ export default function VariantImagesForm() {
             />
           );
         })}
-      </div>
-
-      <button
+              <button
         className="w-12 h-12 bg-blue-800 rounded-md flex items-center justify-center hover:cursor-pointer"
         type="button"
         onClick={() => handleAddImageSlot()}
       >
         <Plus size={18} className="text-white" />
       </button>
+      </div>
+
+
     </div>
   );
 }
