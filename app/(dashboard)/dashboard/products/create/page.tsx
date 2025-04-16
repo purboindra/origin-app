@@ -1,4 +1,3 @@
-import { fetchCategories } from "@/action/category.action";
 import CreateProductsContent from "@/components/shared/create-products-content";
 
 export default async function CreateProductsPage() {

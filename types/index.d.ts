@@ -16,4 +16,5 @@ export interface ProductInterface {
 
 export interface FetchProductsParams {
   searchQuery: string;
+  id: string;
 }

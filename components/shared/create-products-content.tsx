@@ -9,6 +9,7 @@ import { createProductSchema } from "@/lib/validation";
 import { createProduct } from "@/action/products.action";
 import React, { useActionState } from "react";
 import { toast } from "sonner";
+import { ProductInterface } from "@/types";
 
 const initialState = {
   message: "",
@@ -16,7 +17,11 @@ const initialState = {
   success: false,
 };
 
-export default function CreateProductsContent() {
+interface ProductProps {
+  product?: ProductInterface | null;
+}
+
+export default function CreateProductsContent({ product }: ProductProps) {
   const [state, dispatch, pending] = useActionState(
     createProduct,
     initialState
@@ -25,14 +30,14 @@ export default function CreateProductsContent() {
   const form = useForm<z.infer<typeof createProductSchema>>({
     resolver: zodResolver(createProductSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      category: "",
-      colors: [],
-      price: 0,
-      stock: 0,
-      images: [],
-      thumbnail_image: "",
+      name: product?.name || "",
+      description: product?.description || "",
+      category: product?.category.name || "",
+      colors: product?.colors || [],
+      price: product?.price || 0,
+      stock: product?.stock || 0,
+      images: product?.images || [],
+      thumbnail_image: product?.thumbnail_image || "",
     },
   });
 

@@ -133,7 +133,7 @@ export async function createProduct(prevState: any, formData: FormData) {
 
 export async function fetchProducts(params: FetchProductsParams) {
   try {
-    const { searchQuery } = params;
+    const { searchQuery, id } = params;
 
     let query: any = {};
 
@@ -143,6 +143,12 @@ export async function fetchProducts(params: FetchProductsParams) {
       await db.collection("products").createIndex({ name: "text" });
       query = {
         $text: { $search: searchQuery },
+      };
+    }
+
+    if (id) {
+      query = {
+        _id: new ObjectId(id),
       };
     }
 
