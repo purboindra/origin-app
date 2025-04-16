@@ -15,3 +15,7 @@ export interface ProductInterface {
   images: string[];
   category: CategoryInterface;
 }
+
+export interface FetchProductsParams {
+  searchQuery: string;
+}

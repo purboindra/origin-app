@@ -1,8 +1,30 @@
+"use client";
+
 import { ChevronDown, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState } from "react";
 
 export function AppNavbar() {
+  const [query, setQuery] = useState("");
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set("q", query);
+    const url = `/dashboard/products?${params.toString()}`;
+    router.push(url);
+  };
+
   return (
     <nav className=" px-12 py-8 flex justify-between items-center sticky top-0 z-50 w-full bg-white ">
       <div className="relative w-32 h-12">
@@ -14,7 +36,13 @@ export function AppNavbar() {
       </h1>
 
       <div className="flex max-lg:hidden w-[500px]">
-        <Input startIcon={Search} placeholder="Pencarian" />
+        <Input
+          startIcon={Search}
+          placeholder="Pencarian"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
       </div>
 
       <div className="flex space-x-4 justify-end">

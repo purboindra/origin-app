@@ -2,9 +2,10 @@
 
 import { getDb } from "@/lib/db";
 import { createProductSchema } from "@/lib/validation";
-import { ProductInterface } from "@/types";
+import { FetchProductsParams, ProductInterface, ProductsParams } from "@/types";
 import { File } from "buffer";
 import { v2 as cloudinary } from "cloudinary";
+import { Filter, FindOptions } from "mongodb";
 import { revalidateTag } from "next/cache";
 
 cloudinary.config({
@@ -130,11 +131,22 @@ export async function createProduct(prevState: any, formData: FormData) {
   }
 }
 
-export async function fetchProducts() {
+export async function fetchProducts(params: FetchProductsParams) {
   try {
+    const { searchQuery } = params;
+
+    let query: any = {};
+
     const db = await getDb();
 
-    const result = await db.collection("products").find({}).toArray();
+    if (searchQuery) {
+      await db.collection("products").createIndex({ name: "text" });
+      query = {
+        $text: { $search: searchQuery },
+      };
+    }
+
+    const result = await db.collection("products").find(query).toArray();
 
     if (result.length === 0) {
       return {
