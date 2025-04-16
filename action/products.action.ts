@@ -159,7 +159,7 @@ export async function fetchProducts(params: FetchProductsParams) {
     const products = result.map((data) => ({
       ...data,
       id: data._id.toString(),
-    })) as ProductInterface[];
+    })) as unknown as Omit<ProductInterface, "_id">[];
 
     return {
       data: products,

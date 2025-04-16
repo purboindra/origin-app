@@ -1,11 +1,8 @@
-import { ObjectId } from "mongodb";
-
 export interface CategoryInterface {
   name: string;
 }
 
 export interface ProductInterface {
-  _id: ObjectId;
   id: string;
   name: string;
   description: string;
