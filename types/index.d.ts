@@ -10,6 +10,7 @@ export interface ProductInterface {
   stock: number;
   thumbnail_image: string;
   images: string[];
+  colors: string[];
   category: CategoryInterface;
 }
 
