@@ -8,8 +8,6 @@ export default async function DashboardProducts({
 }) {
   const query = (await searchParams).q || "";
 
-  console.log("Query is", query);
-
   const { data, message, success } = await fetchProducts({
     searchQuery: query || "",
   });
@@ -17,7 +15,7 @@ export default async function DashboardProducts({
   if (!data || !success) {
     return (
       <section className="w-full min-h-screen px-8 py-8 flex items-center justify-center">
-        <h1 className="text-4xl font-semibold text-blue-800">{message}</h1>
+        <h1 className="text-4xl font-semibold text-blue-800">{`${message} with ${query}`}</h1>
       </section>
     );
   }
