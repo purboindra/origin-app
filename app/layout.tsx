@@ -26,14 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} antialiased `}>
-        <SidebarProvider>
-          <main className="flex w-full min-h-screen flex-col bg-[#FAFBFC]">
-            <AppNavbar />
-            <AppSidebar />
-            <section className="pl-64">{children}</section>
-          </main>
-          <Toaster />
-        </SidebarProvider>
+        {children}
+        <Toaster />
       </body>
     </html>
   );
