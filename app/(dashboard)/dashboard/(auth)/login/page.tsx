@@ -1,3 +1,4 @@
+import { signIn } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,17 +57,26 @@ export default function Login() {
             <hr className="w-full h-0.5 border-1 border-slate-200" />
           </span>
           <div className="mt-8">
-            <Button className="w-full py-6 bg-blue-800">
-              <div className="flex gap-2 items-center justify-center ">
-                <h1>Masuk dengan</h1>
-                <Image
-                  src={"/google.svg"}
-                  alt="Google Logo"
-                  width={24}
-                  height={24}
-                />
-              </div>
-            </Button>
+            <form
+              action={async () => {
+                "use server";
+                await signIn("google", {
+                  redirectTo: "/dashboard",
+                });
+              }}
+            >
+              <Button type="submit" className="w-full py-6 bg-blue-800">
+                <div className="flex gap-2 items-center justify-center ">
+                  <h1>Masuk dengan</h1>
+                  <Image
+                    src={"/google.svg"}
+                    alt="Google Logo"
+                    width={24}
+                    height={24}
+                  />
+                </div>
+              </Button>
+            </form>
           </div>
         </div>
         <div className="mt-8 w-full items-center flex flex-col">
