@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -68,23 +69,50 @@ export function AppSidebar() {
                     }`}
                   >
                     <SidebarMenuButton asChild isActive className="bg-red-500">
-                      <Link href={item.url} prefetch={false}>
-                        <Image
-                          src={item.icon}
-                          alt={item.title}
-                          width={24}
-                          height={24}
-                          className="w-6 h-6 text-white"
-                        />
-                        <span
-                          className={`text-base font-semibold ${
-                            isActive ? "text-white" : "text-gray-800"
-                          }`}
+                      {item.title === "Keluar" ? (
+                        <button
+                          onClick={() => {
+                            signOut({
+                              redirectTo: "/dashboard/login",
+                            });
+                          }}
+                          className="hover:cursor-pointer"
                         >
-                          {item.title}
-                        </span>
-                        <LoadingIndicator />
-                      </Link>
+                          <Image
+                            src={item.icon}
+                            alt={item.title}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 text-white"
+                          />
+                          <span
+                            className={`text-base font-semibold ${
+                              isActive ? "text-white" : "text-gray-800"
+                            }`}
+                          >
+                            {item.title}
+                          </span>
+                          <LoadingIndicator />
+                        </button>
+                      ) : (
+                        <Link href={item.url} prefetch={false}>
+                          <Image
+                            src={item.icon}
+                            alt={item.title}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 text-white"
+                          />
+                          <span
+                            className={`text-base font-semibold ${
+                              isActive ? "text-white" : "text-gray-800"
+                            }`}
+                          >
+                            {item.title}
+                          </span>
+                          <LoadingIndicator />
+                        </Link>
+                      )}
                     </SidebarMenuButton>
                     {/* <SidebarMenuAction className="peer-data-[active=true]/menu-button:opacity-100" /> */}
                   </SidebarMenuItem>
