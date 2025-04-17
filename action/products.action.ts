@@ -2,10 +2,10 @@
 
 import { getDb } from "@/lib/db";
 import { createProductSchema } from "@/lib/validation";
-import { FetchProductsParams, ProductInterface, ProductsParams } from "@/types";
+import { FetchProductsParams, ProductInterface } from "@/types";
 import { File } from "buffer";
 import { v2 as cloudinary } from "cloudinary";
-import { Filter, FindOptions, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { revalidateTag } from "next/cache";
 
 cloudinary.config({
