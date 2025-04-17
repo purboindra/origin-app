@@ -8,7 +8,7 @@ import Image from "next/image";
 export default function Login() {
   return (
     <main className="flex w-full min-h-screen">
-      <section className="flex flex-col max-sm:hidden flex-1/3 bg-blue-800 py-8 px-16 rounded-tr-xl rounded-br-xl">
+      <section className="flex flex-col max-lg:hidden flex-1/3 bg-blue-800 py-8 px-16 rounded-tr-xl rounded-br-xl">
         <Image
           src={"/origin_horizontal.svg"}
           alt="Logo"
@@ -32,15 +32,6 @@ export default function Login() {
       </section>
       {/* AUTHENTICATION FORM */}
       <section className="w-full flex flex-col items-center justify-center max-w-5xl">
-        <div className="flex flex-col gap-1 w-[40%]">
-          <h1 className="text-4xl font-semibold">Silahkan Masuk</h1>
-          <span className="flex items-center">
-            <h3 className="text-base">Belum punya akun?</h3>
-            <h3 className="text-base underline font-medium ml-1">
-              Daftar disini
-            </h3>
-          </span>
-        </div>
         <div className="flex flex-col gap-5 w-[40%] mt-8">
           <div className="flex flex-col gap-1">
             <Label htmlFor="email">Email Address</Label>
@@ -79,20 +70,18 @@ export default function Login() {
             </form>
           </div>
         </div>
-        <div className="mt-8 w-full items-center flex flex-col">
-          <span className="flex gap-0.5">
-            <p className="inline text-blue-500">Syarat Penggunaan</p>
-            <p className="inline">&</p>
-            <p className="inline text-blue-500">Kebijakan Privasi</p>
-          </span>
-          <span className="flex gap-0.5">
-            <p className="inline">
-              Situs ini dilindungi oleh Origin Protected.
-            </p>
-            <p className="inline text-blue-500">Kebijakan Privasi</p>
-            <p className="inline">&</p>
-            <p className="inline text-blue-500">Syarat Penggunaan</p>
-          </span>
+        <div className="mt-8 w-full items-center flex flex-col px-8">
+          <p>
+            <span className="text-blue-500">Syarat Penggunaan</span>{" "}
+            <span>&</span>{" "}
+            <span className="text-blue-500">Kebijakan Privasi</span>
+          </p>
+          <p className="text-center">
+            Situs ini dilindungi oleh Origin Protected.{" "}
+            <span className="text-blue-500">Kebijakan Privasi</span>{" "}
+            <span>&</span>{" "}
+            <span className="text-blue-500">Syarat Penggunaan</span>
+          </p>
         </div>
       </section>
     </main>
