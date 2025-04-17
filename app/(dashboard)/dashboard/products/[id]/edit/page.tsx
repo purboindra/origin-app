@@ -1,6 +1,5 @@
 import { fetchProducts } from "@/action/products.action";
 import CreateProductsContent from "@/components/shared/create-products-content";
-import { DataTableDemo } from "@/components/shared/product-table";
 
 export default async function DashboardProducts({
   params,
