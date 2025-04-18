@@ -33,15 +33,33 @@ export default function Login() {
       {/* AUTHENTICATION FORM */}
       <section className="w-full flex flex-col items-center justify-center max-w-5xl">
         <div className="flex flex-col gap-5 w-[40%] mt-8">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="email">Email Address</Label>
-            <Input placeholder="Email" id="email" />
-          </div>
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="password">Password</Label>
-            <Input placeholder="Password" id="password" endIcon={EyeOff} />
-          </div>
-          <Button className="mt-8 bg-red-500 w-[249px] py-6">Masuk</Button>
+          <form
+            className="flex flex-col gap-5"
+            action={async (formData: FormData) => {
+              "use server";
+              await signIn("credentials", {
+                email: formData.get("email") || "no email",
+                password: formData.get("password") || "no password",
+              });
+            }}
+          >
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="email">Email Address</Label>
+              <Input placeholder="Email" id="email" type="email" name="email" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                placeholder="Password"
+                id="password"
+                type="password"
+                name="password"
+                endIcon={EyeOff}
+              />
+            </div>
+            <Button className="mt-8 bg-red-500 w-[249px] py-6">Masuk</Button>
+          </form>
+
           <span className="flex gap-2 w-full items-center mt-8">
             <hr className=" w-full h-0.5 border-1 border-slate-200" />
             <h3>Atau</h3>
