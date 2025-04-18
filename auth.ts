@@ -68,13 +68,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return url;
     },
 
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       const isGoogle = account?.provider === "google";
+
+      console.log("signIn callbacks", user, account, profile);
 
       if (isGoogle) {
         try {
           const response = await fetch(
-            `${process.env.NEXTAUTH_URL}/api/users/check`,
+            `http://localhost:3000/api/users/check`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -83,8 +85,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
 
           if (!response.ok) {
-            throw new Error("NotRegistered");
+            return false;
           }
+
+          const body = JSON.stringify({
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            email_verified: profile?.email_verified,
+            provider: account.provider,
+            provider_id: account.provider_id,
+            access_token: account.access_token,
+            refresh_token: account.refresh_token,
+            expires_at: account.expires_at,
+          });
+
+          const resp = await fetch(`http://localhost:3000/api/users`, {
+            method: "POST",
+            headers: { "Content-type": "application/json" },
+            body: body,
+          });
+
+          if (!resp.ok) {
+            return false;
+          }
+
+          return true;
         } catch (error) {
           console.error("Check user failed:", error);
           return false;
