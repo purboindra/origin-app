@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 enum Error {
   Configuration = "Configuration",
@@ -17,6 +18,14 @@ const errorMap = {
 };
 
 export default function AuthErrorPage() {
+  return (
+    <Suspense>
+      <AuthErrorPageContent />;
+    </Suspense>
+  );
+}
+
+function AuthErrorPageContent() {
   const search = useSearchParams();
   const error = search.get("error") as Error;
 

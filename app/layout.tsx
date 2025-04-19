@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/shared/app-sidebar";
-import { AppNavbar } from "@/components/shared/app-navbar";
 import { Toaster } from "sonner";
 import { SessionProvider } from "next-auth/react";
 

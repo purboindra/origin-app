@@ -33,6 +33,7 @@ export default function Login() {
       {/* AUTHENTICATION FORM */}
       <section className="w-full flex flex-col items-center justify-center max-w-5xl">
         <div className="flex flex-col gap-5 w-[40%] mt-8">
+          <h1 className="text-5xl font-semibold">Silahkan Masuk</h1>
           <form
             className="flex flex-col gap-5"
             action={async (formData: FormData) => {

@@ -1,12 +1,3 @@
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { columns, DataTable, Payment } from "./data-table";
 
 export const payments: Payment[] = [

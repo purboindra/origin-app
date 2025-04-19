@@ -22,10 +22,7 @@ interface ProductProps {
 }
 
 export default function CreateProductsContent({ product }: ProductProps) {
-  const [state, dispatch, pending] = useActionState(
-    createProduct,
-    initialState
-  );
+  const [state, dispatch] = useActionState(createProduct, initialState);
 
   const form = useForm<z.infer<typeof createProductSchema>>({
     resolver: zodResolver(createProductSchema),

@@ -159,4 +159,12 @@ body {
   body {
     @apply bg-foreground text-foreground;
   }
+
+  .filter-white {
+    filter: brightness(0) invert(1);
+  }
+  .filter-gray {
+    filter: brightness(0) invert(0.45);
+  }
+
 }

@@ -6,7 +6,7 @@ import React, { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
 export function DeleteProduct({ id }: { id: string }) {
-  const [state, dispatch, pending] = useActionState(deleteProduct, {
+  const [state, dispatch] = useActionState(deleteProduct, {
     message: "",
     success: false,
   });

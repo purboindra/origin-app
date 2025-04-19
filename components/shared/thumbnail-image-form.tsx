@@ -29,7 +29,7 @@ export default function ThumbnailImageForm() {
     <FormField
       control={form.control}
       name="thumbnail_image"
-      render={({ field: { onChange, ...fieldProps } }) => (
+      render={({ field: { onChange } }) => (
         <FormItem>
           <FormControl>
             <div className="relative w-96 h-96">

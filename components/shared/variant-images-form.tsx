@@ -30,7 +30,7 @@ export default function VariantImagesForm() {
               control={form.control}
               name={`images.${index}`}
               key={index}
-              render={({ field: { onChange, ...fieldProps } }) => (
+              render={({ field: { onChange } }) => (
                 <label
                   htmlFor={`images.${index}`}
                   key={index}
@@ -75,16 +75,14 @@ export default function VariantImagesForm() {
             />
           );
         })}
-              <button
-        className="w-12 h-12 bg-blue-800 rounded-md flex items-center justify-center hover:cursor-pointer"
-        type="button"
-        onClick={() => handleAddImageSlot()}
-      >
-        <Plus size={18} className="text-white" />
-      </button>
+        <button
+          className="w-12 h-12 bg-blue-800 rounded-md flex items-center justify-center hover:cursor-pointer"
+          type="button"
+          onClick={() => handleAddImageSlot()}
+        >
+          <Plus size={18} className="text-white" />
+        </button>
       </div>
-
-
     </div>
   );
 }

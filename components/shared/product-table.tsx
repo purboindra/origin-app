@@ -24,11 +24,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
-import { Edit, Trash } from "lucide-react";
+import { Edit } from "lucide-react";
 import { ProductInterface } from "@/types";
-import { deleteProduct } from "@/action/products.action";
 import { DeleteProduct } from "./delete-product";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export const productColumns: ColumnDef<ProductInterface>[] = [

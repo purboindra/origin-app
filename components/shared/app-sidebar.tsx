@@ -83,7 +83,7 @@ export function AppSidebar() {
                             alt={item.title}
                             width={24}
                             height={24}
-                            className="w-6 h-6 text-white"
+                            className="w-6 h-6 invert text-white"
                           />
                           <span
                             className={`text-base font-semibold ${
@@ -101,7 +101,9 @@ export function AppSidebar() {
                             alt={item.title}
                             width={24}
                             height={24}
-                            className="w-6 h-6 text-white"
+                            className={
+                              isActive ? "filter-white" : "filter-gray"
+                            }
                           />
                           <span
                             className={`text-base font-semibold ${

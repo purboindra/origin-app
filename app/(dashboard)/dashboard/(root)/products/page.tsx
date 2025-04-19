@@ -9,6 +9,7 @@ export default async function DashboardProducts({
   const query = (await searchParams).q || "";
 
   const { data, message, success } = await fetchProducts({
+    id: "",
     searchQuery: query || "",
   });
 

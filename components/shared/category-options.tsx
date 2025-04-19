@@ -37,7 +37,9 @@ export function CategoryOptions() {
   const [open, setOpen] = React.useState(false);
 
   if (error) return <div>Failed to load categories</div>;
-  if (!data) return <div>Loading...</div>;
+  if (!data || data.length === 0) return <div>No Data Found</div>;
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -64,27 +66,31 @@ export function CategoryOptions() {
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
-              {data.map((framework) => (
-                <CommandItem
-                  key={framework.name}
-                  value={framework.name}
-                  onSelect={(currentValue) => {
-                    form.setValue(
-                      "category",
-                      currentValue === value ? "" : currentValue
-                    );
-                    setOpen(false);
-                  }}
-                >
-                  {framework.name}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === framework.name ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
+              {data.length === 0 ? (
+                <div>No Data</div>
+              ) : (
+                data.map((framework) => (
+                  <CommandItem
+                    key={framework.name}
+                    value={framework.name}
+                    onSelect={(currentValue) => {
+                      form.setValue(
+                        "category",
+                        currentValue === value ? "" : currentValue
+                      );
+                      setOpen(false);
+                    }}
+                  >
+                    {framework.name}
+                    <Check
+                      className={cn(
+                        "ml-auto",
+                        value === framework.name ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))
+              )}
             </CommandGroup>
           </CommandList>
         </Command>
