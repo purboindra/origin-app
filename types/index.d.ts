@@ -34,8 +34,3 @@ export interface ProductInterface {
   colors: string[];
   category: CategoryInterface;
 }
-
-export interface FetchProductsParams {
-  searchQuery: string;
-  id: string;
-}
