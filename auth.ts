@@ -1,13 +1,19 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import { JWT } from "next-auth/jwt";
+import { getDb } from "./lib/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
+      async profile(profile) {
+        return { role: profile?.role ?? "admin", ...profile };
+      },
     }),
+
     Credentials({
       type: "credentials",
       credentials: {
@@ -55,17 +61,42 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (user) {
         // User is available during sign-in
+        token.role = user.role;
         token.id = user.id;
       }
+
+      console.log("token jwt", token);
 
       return token;
     },
 
     redirect({ url, baseUrl }) {
-      console.log("url", url);
-      console.log("baseUrl", baseUrl);
-
       return url;
+    },
+
+    authorized: async ({ auth, request: { nextUrl } }) => {
+      const hasLoggedIn = !!auth;
+
+      const isAdmin = auth?.user.role === "admin";
+      const isDashboardLogin = nextUrl.pathname == "/dashboard/login";
+      const isDashboard = nextUrl.pathname.startsWith("/dashboard");
+
+      console.log(
+        "authorized middleware",
+        hasLoggedIn,
+        isAdmin,
+        isDashboardLogin
+      );
+
+      if (!hasLoggedIn && !isDashboardLogin) {
+        return Response.redirect(new URL("/dashboard/login", nextUrl));
+      }
+
+      if (hasLoggedIn && isDashboardLogin) {
+        return Response.redirect(new URL("/dashboard", nextUrl));
+      }
+
+      return hasLoggedIn;
     },
 
     async signIn({ user, account, profile }) {

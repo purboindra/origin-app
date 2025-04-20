@@ -18,3 +18,15 @@ export const createProductSchema = z.object({
   thumbnail_image: z.union([z.string(), z.instanceof(File)]).optional(),
   images: z.array(z.union([z.string(), z.instanceof(File)])).optional(),
 });
+
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, {
+      message: "Email is required",
+    })
+    .email({ message: "Invalid email address" }),
+  password: z.string().min(6, {
+    message: "Password should be at least 6 characters",
+  }),
+});
