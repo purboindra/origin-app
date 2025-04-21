@@ -54,15 +54,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   callbacks: {
-    jwt({ token, user, account }) {
+    jwt({ token, user, account, profile }) {
       console.log("token jwt", token);
       console.log("user jwt", user);
       console.log("account jwt", account);
+      console.log("profile jwt", profile);
 
       if (user) {
         // User is available during sign-in
         token.role = user.role;
         token.id = user.id;
+        token.picture = profile?.picture;
       }
 
       console.log("token jwt", token);
@@ -70,7 +72,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
 
-    redirect({ url, baseUrl }) {
+    redirect({ url }) {
       return url;
     },
 
@@ -152,8 +154,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     session({ session, token }) {
-      console.log("session", session);
-      console.log("token", token);
+      console.log("session session", session);
+      console.log("token session", token);
+
+      session.user.image = token.picture;
+      session.user.role = token.role;
 
       return session;
     },
