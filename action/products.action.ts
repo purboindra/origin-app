@@ -2,7 +2,8 @@
 
 import { getDb } from "@/lib/db";
 import { createProductSchema } from "@/lib/validation";
-import { FetchProductsParams, ProductInterface } from "@/types";
+import { ProductInterface } from "@/types";
+import { FetchProductsParams } from "@/types/params.index";
 import { File } from "buffer";
 import { v2 as cloudinary } from "cloudinary";
 import { ObjectId } from "mongodb";
@@ -190,8 +191,6 @@ export async function fetchProducts(params: FetchProductsParams) {
 }
 
 export async function deleteProduct(prevState: any, formData: FormData) {
-  console.log("Delete product EZZZ");
-
   try {
     const id = formData.get("id") as string;
 

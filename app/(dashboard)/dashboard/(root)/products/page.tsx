@@ -1,5 +1,5 @@
 import { fetchProducts } from "@/action/products.action";
-import { DataTableDemo } from "@/components/shared/product-table";
+import { ProductTable } from "@/components/shared/product-table";
 
 export default async function DashboardProducts({
   searchParams,
@@ -23,7 +23,7 @@ export default async function DashboardProducts({
 
   return (
     <section className="w-full min-h-screen px-8 py-8">
-      <DataTableDemo products={data} />
+      <ProductTable products={data} />
     </section>
   );
 }

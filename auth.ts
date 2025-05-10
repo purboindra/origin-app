@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
-import { getDb } from "./lib/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [

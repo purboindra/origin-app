@@ -60,7 +60,6 @@ export const productColumns: ColumnDef<ProductInterface>[] = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("price"));
 
-      // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -113,11 +112,11 @@ export const productColumns: ColumnDef<ProductInterface>[] = [
   },
 ];
 
-interface DataTableDemoProps {
+interface ProductTableProps {
   products: ProductInterface[];
 }
 
-export function DataTableDemo({ products }: DataTableDemoProps) {
+export function ProductTable({ products }: ProductTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

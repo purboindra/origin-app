@@ -16,7 +16,7 @@ export async function runMongoDB() {
   if (isConnected === false) {
     try {
       await client.connect();
-      await client.db("originapp").command({ ping: 1 });
+      client.db("originapp");
 
       isConnected = true;
     } catch (err) {
