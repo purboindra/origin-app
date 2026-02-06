@@ -1,14 +1,8 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI as string;
 
-export const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: false,
-    deprecationErrors: true,
-  },
-});
+export const client = new MongoClient(uri);
 
 let isConnected = false;
 

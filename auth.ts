@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { JWT } from "next-auth/jwt";
+import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -89,15 +88,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         isDashboardLogin
       );
 
-      if (!hasLoggedIn && !isDashboardLogin) {
-        return Response.redirect(new URL("/dashboard/login", nextUrl));
-      }
+      // if (!hasLoggedIn && !isDashboardLogin) {
+      //   return Response.redirect(new URL("/dashboard/login", nextUrl));
+      // }
 
-      if (hasLoggedIn && isDashboardLogin) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
-      }
+      // if (hasLoggedIn && isDashboardLogin) {
+      //   return Response.redirect(new URL("/dashboard", nextUrl));
+      // }
 
-      return hasLoggedIn;
+      return true;
     },
 
     async signIn({ user, account, profile }) {

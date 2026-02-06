@@ -1,16 +1,19 @@
 "use client";
 
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { fetcher } from "@/lib/fetcher";
+import { cn } from "@/lib/utils";
+import { createProductSchema } from "@/lib/validation";
+import { Check, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
+import { useFormContext } from "react-hook-form";
+import useSWR from "swr";
+import { z } from "zod";
 import {
   Command,
   CommandEmpty,
@@ -19,13 +22,9 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
-import { z } from "zod";
-import { createProductSchema } from "@/lib/validation";
-import { useFormContext } from "react-hook-form";
-import { CategoryInterface } from "@/types";
 
 export function CategoryOptions() {
-  const { data, error, isLoading } = useSWR<CategoryInterface[]>(
+  const { data, error, isLoading } = useSWR(
     "/api/categories",
     fetcher
   );
@@ -37,9 +36,14 @@ export function CategoryOptions() {
   const [open, setOpen] = React.useState(false);
 
   if (error) return <div>Failed to load categories</div>;
-  if (!data || data.length === 0) return <div>No Data Found</div>;
+
+  const categories = data?.data;
+  
+  if (!categories || (Array.isArray(categories) && categories.length === 0)) return <div>No Data Found</div>;
 
   if (isLoading) return <div>Loading...</div>;
+
+  console.log(data);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -52,7 +56,7 @@ export function CategoryOptions() {
           className="w-[200px] justify-between text-xl font-medium text-blue-800/50"
         >
           {value
-            ? data.find((framework) => framework.name === value)?.name
+            ? categories.find((framework) => framework.name === value)?.name
             : "Kategori"}
           <ChevronsUpDown className="opacity-50" />
           {value.length > 0 && (
@@ -66,10 +70,10 @@ export function CategoryOptions() {
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
-              {data.length === 0 ? (
+              {Array.isArray(categories) && categories.length === 0 ? (
                 <div>No Data</div>
               ) : (
-                data.map((framework) => (
+                categories.map((framework) => (
                   <CommandItem
                     key={framework.name}
                     value={framework.name}

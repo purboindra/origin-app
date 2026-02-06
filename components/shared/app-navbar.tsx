@@ -1,11 +1,11 @@
 "use client";
 
 import { ChevronDown, Search } from "lucide-react";
-import { Input } from "../ui/input";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-import { useSession } from "next-auth/react";
+import { Input } from "../ui/input";
 
 export function AppNavbar() {
   const [query, setQuery] = useState("");
@@ -50,7 +50,7 @@ export function AppNavbar() {
 
       <div className="flex space-x-4 justify-end">
         <div className="h-8 w-8 md:h-12 md:w-12 relative">
-          <div className="bg-red-200 rounded-md absolute bottom-0 h-full w-full" />
+          <div className=" rounded-md absolute bottom-0 h-full w-full" />
           <div className=" absolute transform translate-x-1/2 translate-y-1/2 w-6 h-6">
             <Image
               src={"/notification.svg"}
@@ -74,14 +74,13 @@ export function AppNavbar() {
               />
             )}
           </div>
-          <div className="flex flex-col">
-            <div className="flex space-x-1 items-center">
-              <h2 className="text-base font-medium text-blue-800">
-                {session?.user?.name}
+          <div className="flex items-center">
+             <h2 className="text-base font-medium text-blue-800">
+                {session?.user?.name ?? "Anonymous"}
               </h2>
+            <div className="flex space-x-1 items-center">
               <ChevronDown size={12} />
             </div>
-            <h3 className="text-gray-400">Admin</h3>
           </div>
         </div>
       </div>

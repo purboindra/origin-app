@@ -54,13 +54,12 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="pt-30">
-      <SidebarContent className="py-2 bg-white">
+      <SidebarContent className="py-2">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
                 const isActive = item.url === pathname;
-
                 return (
                   <SidebarMenuItem
                     key={item.title}
@@ -68,7 +67,7 @@ export function AppSidebar() {
                       isActive ? "bg-red-500 rounded-md" : ""
                     }`}
                   >
-                    <SidebarMenuButton asChild isActive className="bg-red-500">
+                    <SidebarMenuButton asChild className="hover:bg-transparent">
                       {item.title === "Keluar" ? (
                         <button
                           onClick={() => {
