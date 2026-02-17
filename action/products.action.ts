@@ -1,19 +1,9 @@
 "use server";
 
-import { getDb } from "@/lib/db";
 import { createProductSchema } from "@/lib/validation";
-import { ProductInterface } from "@/types";
 import { FetchProductsParams } from "@/types/params.index";
 import { File } from "buffer";
-import { v2 as cloudinary } from "cloudinary";
-import { ObjectId } from "mongodb";
 import { revalidateTag } from "next/cache";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 export async function createProduct(prevState: any, formData: FormData) {
   const thumbnail_image = formData.get("thumbnail_image");
@@ -41,8 +31,6 @@ export async function createProduct(prevState: any, formData: FormData) {
   }
 
   try {
-    const db = await getDb();
-
     let thumbnail_image_url = "";
     const images_url: string[] = [];
 
@@ -69,7 +57,7 @@ export async function createProduct(prevState: any, formData: FormData) {
             fileFormData.append("file", thumbnail_image);
             return fileFormData;
           })(),
-        }
+        },
       );
 
       if (result.ok) {
@@ -92,7 +80,7 @@ export async function createProduct(prevState: any, formData: FormData) {
               fileFormData.append("file", image);
               return fileFormData;
             })(),
-          }
+          },
         );
 
         if (result.ok) {
@@ -104,18 +92,7 @@ export async function createProduct(prevState: any, formData: FormData) {
       imageIndex++;
     }
 
-    await db.collection("products").insertOne({
-      name,
-      description,
-      category,
-      colors,
-      price,
-      stock,
-      images: images_url,
-      thumbnail_image: thumbnail_image_url,
-    });
-
-    revalidateTag("products");
+    revalidateTag("products", "fast");
 
     return {
       success: true,
@@ -138,45 +115,39 @@ export async function fetchProducts(params: FetchProductsParams) {
 
     let query: any = {};
 
-    const db = await getDb();
+    //   const db = await getDb();
 
-    if (searchQuery) {
-      await db.collection("products").createIndex({ name: "text" });
-      query = {
-        $text: { $search: searchQuery },
-      };
-    }
+    // if (searchQuery) {
+    //   await db.collection("products").createIndex({ name: "text" });
+    //   query = {
+    //     $text: { $search: searchQuery },
+    //   };
+    // }
 
-    if (id) {
-      query = {
-        _id: new ObjectId(id),
-      };
-    }
+    // const result = await db.collection("products").find(query).toArray();
 
-    const result = await db.collection("products").find(query).toArray();
+    // if (result.length === 0) {
+    //   return {
+    //     data: null,
+    //     message: "No products found",
+    //     success: false,
+    //   };
+    // }
 
-    if (result.length === 0) {
-      return {
-        data: null,
-        message: "No products found",
-        success: false,
-      };
-    }
-
-    const products = result.map((data) => ({
-      id: data._id.toString(),
-      category: data.category,
-      name: data.name,
-      description: data.description,
-      price: data.price,
-      stock: data.stock,
-      thumbnail_image: data.thumbnail_image,
-      images: data.images,
-      colors: data.colors,
-    })) as ProductInterface[];
+    // const products = result.map((data: any) => ({
+    //   id: data._id.toString(),
+    //   category: data.category,
+    //   name: data.name,
+    //   description: data.description,
+    //   price: data.price,
+    //   stock: data.stock,
+    //   thumbnail_image: data.thumbnail_image,
+    //   images: data.images,
+    //   colors: data.colors,
+    // })) as ProductInterface[];
 
     return {
-      data: products,
+      data: [],
       message: "Success fetch products",
       success: true,
     };
@@ -202,20 +173,18 @@ export async function deleteProduct(prevState: any, formData: FormData) {
       };
     }
 
-    const db = await getDb();
+    // const db = await getDb();
 
-    const result = await db.collection("products").deleteOne({
-      _id: new ObjectId(id || ""),
-    });
+    // const result = await db.collection("products").deleteOne({});
 
-    if (result.deletedCount === 0) {
-      return {
-        message: "Product not found",
-        success: false,
-      };
-    }
+    // if (result.deletedCount === 0) {
+    //   return {
+    //     message: "Product not found",
+    //     success: false,
+    //   };
+    // }
 
-    revalidateTag("products");
+    // revalidateTag("products", "fast");
 
     return {
       message: "Success delete product!",

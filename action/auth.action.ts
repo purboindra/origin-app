@@ -1,41 +1,68 @@
 "use server";
 
-import { loginSchema } from "@/lib/validation";
-import { signIn } from "next-auth/react";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-export async function login(prevState: any, formData: FormData) {
-  const validatedFields = loginSchema.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
-  });
+import { createClient } from "@/lib/supabase/server";
 
-  if (!validatedFields.success) {
-    console.log(validatedFields.error);
+export async function login(formData: FormData) {
+  const supabase = await createClient();
 
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      success: false,
-    };
+  const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  };
+
+  const { error, data: userData } =
+    await supabase.auth.signInWithPassword(data);
+
+  if (error) {
+    redirect("/error");
   }
 
-  const { email, password } = validatedFields.data;
+  console.log(userData);
 
-  try {
-    await signIn("credentials", {
-      email,
-      password,
-    });
+  revalidatePath("/dashboard", "layout");
+  redirect("/dashboard");
+}
 
-    return {
-      message: "Success login",
-      success: true,
-    };
-  } catch (error) {
-    console.error("Error from login", error);
-    return {
-      message: "Internal Server Error",
-      timestamp: Date.now(),
-      success: false,
-    };
+export async function signup(formData: FormData) {
+  const supabase = await createClient();
+
+  const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  };
+
+  const { error } = await supabase.auth.signUp(data);
+
+  if (error) {
+    redirect("/error");
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/account");
+}
+
+export async function loginWithGoogle() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "http://localhost:3000/api/auth/callback",
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
+    },
+  });
+
+  if (error) {
+    redirect("/error");
+  }
+
+  if (data.url) {
+    redirect(data.url);
   }
 }

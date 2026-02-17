@@ -8,7 +8,7 @@ export async function fetchCategories() {
 
     const result = await db.collection("categories").find({}).toArray();
 
-    const categories = result.map((cat) => ({
+    const categories = result.map((cat: any) => ({
       ...cat,
       id: cat._id.toString(),
     }));

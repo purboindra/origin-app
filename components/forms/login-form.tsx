@@ -1,7 +1,9 @@
 "use client";
 
+import { login } from "@/action/auth.action";
 import { loginSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -14,10 +16,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { EyeOff } from "lucide-react";
-import { useActionState, useEffect } from "react";
-import { login } from "@/action/auth.action";
-import { toast } from "sonner";
 
 const initialState = {
   errors: {
@@ -30,7 +28,7 @@ const initialState = {
 };
 
 export default function LoginForm() {
-  const [state, dispatch, pending] = useActionState(login, initialState);
+  // const [state, dispatch, pending] = useActionState(login, initialState);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -40,17 +38,17 @@ export default function LoginForm() {
     },
   });
 
-  useEffect(() => {
-    if (!state.success) {
-      toast.error(state.message);
-    }
-  }, [state.message, state.success, state.timestamp]);
+  // useEffect(() => {
+  //   if (!state.success) {
+  //     toast.error(state.message);
+  //   }
+  // }, [state.message, state.success, state.timestamp]);
 
   return (
     <div className="flex flex-col gap-5 w-[70%] mt-8">
       <h1 className="text-5xl font-semibold">Silahkan Masuk</h1>
       <Form {...form}>
-        <form action={dispatch} className="flex flex-col gap-1">
+        <form action={login} className="flex flex-col gap-1">
           <FormField
             control={form.control}
             name="email"
@@ -66,7 +64,7 @@ export default function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage>
-                  {state.errors?.email && state.errors?.email[0]}
+                  {/* {state.errors?.email && state.errors?.email[0]} */}
                 </FormMessage>
               </FormItem>
             )}
@@ -87,7 +85,7 @@ export default function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage>
-                  {state.errors?.password && state.errors?.password[0]}
+                  {/* {state.errors?.password && state.errors?.password[0]} */}
                 </FormMessage>
               </FormItem>
             )}
@@ -95,7 +93,7 @@ export default function LoginForm() {
           <Button
             type="submit"
             className="mt-8 bg-red-500 hover:bg-red-600 w-[249px] py-6"
-            disabled={pending}
+            // disabled={pending}
           >
             Masuk
           </Button>

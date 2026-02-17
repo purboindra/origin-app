@@ -10,7 +10,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -69,14 +68,7 @@ export function AppSidebar() {
                   >
                     <SidebarMenuButton asChild className="hover:bg-transparent">
                       {item.title === "Keluar" ? (
-                        <button
-                          onClick={() => {
-                            signOut({
-                              redirectTo: "/dashboard/login",
-                            });
-                          }}
-                          className="hover:cursor-pointer"
-                        >
+                        <button className="hover:cursor-pointer">
                           <Image
                             src={item.icon}
                             alt={item.title}

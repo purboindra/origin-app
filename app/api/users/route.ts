@@ -1,5 +1,3 @@
-import { getDb } from "@/lib/db";
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -25,47 +23,9 @@ export async function POST(request: Request) {
         }),
         {
           status: 400,
-        }
-      );
-    }
-
-    const db = await getDb();
-
-    const findUser = await db.collection("users").findOne({
-      email,
-    });
-
-    if (!findUser) {
-      return new Response(
-        JSON.stringify({
-          message: "No user found",
-          success: false,
-          data: null,
-        }),
-        {
-          status: 400,
-        }
-      );
-    }
-
-    await db.collection("users").updateOne(
-      {
-        email,
-      },
-      {
-        $set: {
-          name,
-          image,
-          email_verified,
-          provider,
-          provider_id,
-          access_token,
-          refresh_token,
-          expires_at,
-          role: "admin",
         },
-      }
-    );
+      );
+    }
 
     return new Response(
       JSON.stringify({
@@ -75,7 +35,7 @@ export async function POST(request: Request) {
       }),
       {
         status: 201,
-      }
+      },
     );
   } catch (error) {
     console.error("Error creating user:", error);
@@ -87,7 +47,7 @@ export async function POST(request: Request) {
       }),
       {
         status: 500,
-      }
+      },
     );
   }
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronDown, Search } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
@@ -12,8 +11,6 @@ export function AppNavbar() {
 
   const searchParams = useSearchParams();
   const router = useRouter();
-
-  const { data: session } = useSession();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -64,7 +61,7 @@ export function AppNavbar() {
         {/* USER INFO */}
         <div className="flex space-x-2">
           <div className="w-12 h-12 bg-gray-200 rounded-md">
-            {session?.user?.image && (
+            {/* {session?.user?.image && (
               <Image
                 src={session?.user?.image}
                 alt="User Logo"
@@ -72,12 +69,10 @@ export function AppNavbar() {
                 height={48}
                 className="rounded-md object-cover"
               />
-            )}
+            )} */}
           </div>
           <div className="flex items-center">
-             <h2 className="text-base font-medium text-blue-800">
-                {session?.user?.name ?? "Anonymous"}
-              </h2>
+            <h2 className="text-base font-medium text-blue-800">Anonymous</h2>
             <div className="flex space-x-1 items-center">
               <ChevronDown size={12} />
             </div>

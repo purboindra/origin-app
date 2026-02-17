@@ -1,4 +1,4 @@
-import { signIn } from "@/auth";
+import { loginWithGoogle } from "@/action/auth.action";
 import LoginForm from "@/components/forms/login-form";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -37,15 +37,7 @@ export default function Login() {
             <h3>Atau</h3>
             <hr className="w-full h-0.5 border-1 border-slate-200" />
           </span>
-          <form
-            action={async () => {
-              "use server";
-              await signIn("google", {
-                redirectTo: "/dashboard",
-              });
-            }}
-            className="w-[60%]"
-          >
+          <form action={loginWithGoogle} className="w-[60%]">
             <Button type="submit" className="w-full py-6 bg-blue-800">
               <div className="flex gap-2 items-center justify-center ">
                 <h1>Masuk dengan</h1>

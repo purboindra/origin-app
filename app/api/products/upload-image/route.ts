@@ -1,5 +1,3 @@
-import { cloudinary } from "@/lib/cloudinary";
-
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -19,20 +17,16 @@ export async function POST(request: Request) {
     const mimeType = file.type;
     const fileUri = `data:${mimeType};base64,${base64}`;
 
-    const uploadResult = await cloudinary.uploader.upload(fileUri, {
-      folder: "product-images",
-    });
-
     return new Response(
       JSON.stringify({
         message: "File uploaded successfully",
-        url: uploadResult.secure_url,
+        url: "",
       }),
       {
         status: 200,
         statusText: "File uploaded successfully",
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   } catch (error) {
     console.error(`Error from upload product image: ${error}`);
@@ -43,7 +37,7 @@ export async function POST(request: Request) {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 }
