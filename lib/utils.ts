@@ -10,11 +10,11 @@ export const fileToDataURL = (file: File): Promise<string> => {
     const reader = new FileReader();
 
     reader.onload = () => {
-      resolve(reader.result as string); // base64 data URI
+      resolve(reader.result as string);
     };
 
     reader.onerror = reject;
 
-    reader.readAsDataURL(file); // ⬅️ this reads file as base64
+    reader.readAsDataURL(file);
   });
 };

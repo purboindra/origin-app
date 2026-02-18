@@ -1,15 +1,15 @@
 "use client";
 
-import UploadImageComponent from "./upload-image-component";
-import ProductInformationForm from "./product-information-form";
-import { FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createProductSchema } from "@/lib/validation";
 import { createProduct } from "@/action/products.action";
-import React, { useActionState } from "react";
-import { toast } from "sonner";
+import { createProductSchema } from "@/lib/validation";
 import { ProductInterface } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useActionState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import ProductInformationForm from "./product-information-form";
+import UploadImageComponent from "./upload-image-component";
 
 const initialState = {
   message: "",
@@ -29,7 +29,7 @@ export default function CreateProductsContent({ product }: ProductProps) {
     defaultValues: {
       name: product?.name || "",
       description: product?.description || "",
-      category: product?.category.name || "",
+      category: product?.category.label || "",
       colors: product?.colors || [],
       price: product?.price || 0,
       stock: product?.stock || 0,

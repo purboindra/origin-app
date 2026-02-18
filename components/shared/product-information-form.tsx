@@ -1,10 +1,10 @@
+import { createProductSchema } from "@/lib/validation";
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { FormControl, FormField, FormItem } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { CategoryOptions } from "./category-options";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { createProductSchema } from "@/lib/validation";
-import { FormControl, FormField, FormItem } from "../ui/form";
 import CalorOptionsForm from "./color-options-form";
 import { SubmitButtonCreatePrudct } from "./submit-button-create-prudct";
 
@@ -54,9 +54,7 @@ export default function ProductInformationForm() {
       <FormField
         control={form.control}
         name="description"
-        render={({ field }) => (
-          <Textarea placeholder="Deskripsi" maxLength={12} {...field} />
-        )}
+        render={({ field }) => <Textarea placeholder="Deskripsi" {...field} />}
       />
       <div className="flex space-x-12">
         <CategoryOptions />

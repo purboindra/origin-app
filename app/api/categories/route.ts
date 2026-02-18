@@ -1,21 +1,25 @@
+import { createClient } from "@/lib/supabase/server";
+
 export async function GET() {
   try {
-    return new Response(
-      JSON.stringify({
+    const supabase = await createClient();
+    const response = await supabase.from("categories").select();
+    return Response.json(
+      {
         message: "Success get categories",
-        data: [],
-      }),
+        data: response.data ?? [],
+      },
       {
         status: 200,
       },
     );
   } catch (error) {
     console.log(error);
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         message: "Internal Server Error",
         data: null,
-      }),
+      },
       {
         status: 500,
       },

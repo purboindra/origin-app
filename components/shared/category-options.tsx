@@ -9,6 +9,7 @@ import {
 import { fetcher } from "@/lib/fetcher";
 import { cn } from "@/lib/utils";
 import { createProductSchema } from "@/lib/validation";
+import { CategoryInterface } from "@/types";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 import { useFormContext } from "react-hook-form";
@@ -24,7 +25,11 @@ import {
 } from "../ui/command";
 
 export function CategoryOptions() {
-  const { data, error, isLoading } = useSWR("/api/categories", fetcher);
+  const {
+    data: categories,
+    error,
+    isLoading,
+  } = useSWR<CategoryInterface[]>("/api/categories", fetcher);
 
   const form = useFormContext<z.infer<typeof createProductSchema>>();
 
@@ -34,29 +39,24 @@ export function CategoryOptions() {
 
   if (error) return <div>Failed to load categories</div>;
 
-  const categories = data?.data;
-
   if (!categories || (Array.isArray(categories) && categories.length === 0))
     return <div>No Data Found</div>;
 
   if (isLoading) return <div>Loading...</div>;
 
-  console.log(data);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="h-16">
+      <PopoverTrigger asChild className="h-12">
         <Button
           disabled={isLoading}
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between text-xl font-medium text-blue-800/50"
+          className="w-[200px] justify-between text-base font-medium text-blue-800/50"
         >
           {value
-            ? categories.find(
-                (framework: { name: string }) => framework.name === value,
-              )?.name
+            ? categories.find((framework) => String(framework.id) === value)
+                ?.label
             : "Kategori"}
           <ChevronsUpDown className="opacity-50" />
           {value.length > 0 && (
@@ -73,23 +73,25 @@ export function CategoryOptions() {
               {Array.isArray(categories) && categories.length === 0 ? (
                 <div>No Data</div>
               ) : (
-                categories.map((framework: { name: string }) => (
+                categories.map((framework) => (
                   <CommandItem
-                    key={framework.name}
-                    value={framework.name}
+                    key={framework.id}
+                    value={framework.label}
                     onSelect={(currentValue) => {
                       form.setValue(
                         "category",
-                        currentValue === value ? "" : currentValue,
+                        currentValue === value ? "" : String(framework.id),
                       );
                       setOpen(false);
                     }}
                   >
-                    {framework.name}
+                    {framework.label}
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === framework.name ? "opacity-100" : "opacity-0",
+                        value === String(framework.id)
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
                   </CommandItem>

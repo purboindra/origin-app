@@ -1,6 +1,8 @@
 "use server";
 
+import { createClient } from "@/lib/supabase/server";
 import { createProductSchema } from "@/lib/validation";
+import { ProductInterface } from "@/types";
 import { FetchProductsParams } from "@/types/params.index";
 import { File } from "buffer";
 import { revalidateTag } from "next/cache";
@@ -33,7 +35,6 @@ export async function createProduct(prevState: any, formData: FormData) {
   try {
     let thumbnail_image_url = "";
     const images_url: string[] = [];
-
     const {
       category,
       colors,
@@ -113,41 +114,38 @@ export async function fetchProducts(params: FetchProductsParams) {
   try {
     const { searchQuery, id } = params;
 
-    let query: any = {};
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select()
+      .textSearch("name", searchQuery ?? "");
 
-    //   const db = await getDb();
+    if (error) {
+      throw error;
+    }
 
-    // if (searchQuery) {
-    //   await db.collection("products").createIndex({ name: "text" });
-    //   query = {
-    //     $text: { $search: searchQuery },
-    //   };
-    // }
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return {
+        data: null,
+        message: "No products found",
+        success: false,
+      };
+    }
 
-    // const result = await db.collection("products").find(query).toArray();
-
-    // if (result.length === 0) {
-    //   return {
-    //     data: null,
-    //     message: "No products found",
-    //     success: false,
-    //   };
-    // }
-
-    // const products = result.map((data: any) => ({
-    //   id: data._id.toString(),
-    //   category: data.category,
-    //   name: data.name,
-    //   description: data.description,
-    //   price: data.price,
-    //   stock: data.stock,
-    //   thumbnail_image: data.thumbnail_image,
-    //   images: data.images,
-    //   colors: data.colors,
-    // })) as ProductInterface[];
+    const products = data.map((data: any) => ({
+      id: data._id.toString(),
+      category: data.category,
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+      thumbnail_image: data.thumbnail_image,
+      images: data.images,
+      colors: data.colors,
+    })) as ProductInterface[];
 
     return {
-      data: [],
+      data: products,
       message: "Success fetch products",
       success: true,
     };

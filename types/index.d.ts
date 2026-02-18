@@ -20,7 +20,10 @@ declare module "next-auth/jwt" {
 }
 
 export interface CategoryInterface {
-  name: string;
+  label: string;
+  id: number;
+  slug: string;
+  description: string;
 }
 
 export interface ProductInterface {

@@ -1,12 +1,17 @@
 "use client";
 
+import { User } from "@supabase/supabase-js";
 import { ChevronDown, Search } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { Input } from "../ui/input";
 
-export function AppNavbar() {
+interface AppNavbarInterface {
+  user: User;
+}
+
+export function AppNavbar({ user }: AppNavbarInterface) {
   const [query, setQuery] = useState("");
 
   const searchParams = useSearchParams();
@@ -45,7 +50,7 @@ export function AppNavbar() {
         />
       </div>
 
-      <div className="flex space-x-4 justify-end">
+      <div className="flex space-x-4 justify-end hover:cursor-pointer">
         <div className="h-8 w-8 md:h-12 md:w-12 relative">
           <div className=" rounded-md absolute bottom-0 h-full w-full" />
           <div className=" absolute transform translate-x-1/2 translate-y-1/2 w-6 h-6">
@@ -61,18 +66,20 @@ export function AppNavbar() {
         {/* USER INFO */}
         <div className="flex space-x-2">
           <div className="w-12 h-12 bg-gray-200 rounded-md">
-            {/* {session?.user?.image && (
+            {user.user_metadata.avatar_url && (
               <Image
-                src={session?.user?.image}
+                src={user.user_metadata.avatar_url}
                 alt="User Logo"
                 width={48}
                 height={48}
                 className="rounded-md object-cover"
               />
-            )} */}
+            )}
           </div>
           <div className="flex items-center">
-            <h2 className="text-base font-medium text-blue-800">Anonymous</h2>
+            <h2 className="text-base font-medium text-blue-800">
+              {user?.user_metadata?.name ?? "-"}
+            </h2>
             <div className="flex space-x-1 items-center">
               <ChevronDown size={12} />
             </div>

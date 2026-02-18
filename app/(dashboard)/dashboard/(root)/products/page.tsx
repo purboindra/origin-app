@@ -6,23 +6,24 @@ export default async function DashboardProducts({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
-  const query = (await searchParams).q || "";
+  const { page = "1", limit = "10", q = "" } = await searchParams;
 
   const { data, message, success } = await fetchProducts({
-    id: "",
-    searchQuery: query || "",
+    searchQuery: q,
+    page: page,
+    limit: limit,
   });
 
   if (!data || !success) {
     return (
-      <section className="w-full min-h-screen px-8 py-8 flex items-center justify-center">
-        <h1 className="text-4xl font-semibold text-blue-800">{`${message} with ${query}`}</h1>
+      <section className="w-full min-h-screen p-8 flex items-center justify-center">
+        <h1 className="text-4xl font-semibold text-blue-800">{`${message} with ${q}`}</h1>
       </section>
     );
   }
 
   return (
-    <section className="w-full min-h-screen px-8 py-8">
+    <section className="w-full min-h-screen p-8">
       <ProductTable products={data} />
     </section>
   );
