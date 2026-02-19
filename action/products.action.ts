@@ -50,16 +50,13 @@ export async function createProduct(prevState: any, formData: FormData) {
       thumbnail_image instanceof File &&
       thumbnail_image.size > 0
     ) {
-      const result = await fetch(
-        "http://localhost:3000/api/products/upload-image",
-        {
-          method: "POST",
-          body: (() => {
-            fileFormData.append("file", thumbnail_image);
-            return fileFormData;
-          })(),
-        },
-      );
+      const result = await fetch("/api/products/upload-image", {
+        method: "POST",
+        body: (() => {
+          fileFormData.append("file", thumbnail_image);
+          return fileFormData;
+        })(),
+      });
 
       if (result.ok) {
         thumbnail_image_url = (await result.json()).url;
