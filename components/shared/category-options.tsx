@@ -33,7 +33,7 @@ export function CategoryOptions() {
 
   const form = useFormContext<z.infer<typeof createProductSchema>>();
 
-  const value = form.watch("category");
+  const value = "";
 
   const [open, setOpen] = React.useState(false);
 

@@ -1,22 +1,14 @@
-import { createProductSchema } from "@/lib/validation";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { FormControl, FormField, FormItem } from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
 import { CategoryOptions } from "./category-options";
 import CalorOptionsForm from "./color-options-form";
 import { SubmitButtonCreatePrudct } from "./submit-button-create-prudct";
 
 export default function ProductInformationForm() {
-  const form = useFormContext<z.infer<typeof createProductSchema>>();
-
   return (
     <div className="flex flex-1 flex-col space-y-4">
       <h1 className="text-4xl font-semibold text-blue-800">
         Keterangan Produk
       </h1>
-      <FormField
+      {/* <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
@@ -55,7 +47,7 @@ export default function ProductInformationForm() {
         control={form.control}
         name="description"
         render={({ field }) => <Textarea placeholder="Deskripsi" {...field} />}
-      />
+      /> */}
       <div className="flex space-x-12">
         <CategoryOptions />
         <CalorOptionsForm />

@@ -8,6 +8,8 @@ import { File } from "buffer";
 import { revalidateTag } from "next/cache";
 
 export async function createProduct(prevState: any, formData: FormData) {
+  console.log(Object.fromEntries(formData.entries()));
+
   const thumbnail_image = formData.get("thumbnail_image");
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;

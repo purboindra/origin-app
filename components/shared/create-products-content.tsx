@@ -5,7 +5,7 @@ import { createProductSchema } from "@/lib/validation";
 import { ProductInterface } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useActionState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import ProductInformationForm from "./product-information-form";
@@ -70,13 +70,11 @@ export default function CreateProductsContent({ product }: ProductProps) {
   }, [state.message, state.timestamp, state.success]);
 
   return (
-    <FormProvider {...form}>
-      <form action={handleDispatch}>
-        <div className="flex space-x-4 w-full h-full bg-white rounded-md p-12">
-          <UploadImageComponent />
-          <ProductInformationForm />
-        </div>
-      </form>
-    </FormProvider>
+    <form action={dispatch}>
+      <div className="flex space-x-4 w-full h-full bg-white rounded-md p-12">
+        <UploadImageComponent />
+        <ProductInformationForm />
+      </div>
+    </form>
   );
 }
