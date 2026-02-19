@@ -73,16 +73,13 @@ export async function createProduct(prevState: any, formData: FormData) {
 
       const image = formData.get(`images.${imageIndex}`);
       if (image instanceof File && image.size > 0) {
-        const result = await fetch(
-          "http://localhost:3000/api/products/upload-image",
-          {
-            method: "POST",
-            body: (() => {
-              fileFormData.append("file", image);
-              return fileFormData;
-            })(),
-          },
-        );
+        const result = await fetch("/api/products/upload-image", {
+          method: "POST",
+          body: (() => {
+            fileFormData.append("file", image);
+            return fileFormData;
+          })(),
+        });
 
         if (result.ok) {
           const url = (await result.json()).url;
@@ -93,7 +90,7 @@ export async function createProduct(prevState: any, formData: FormData) {
       imageIndex++;
     }
 
-    revalidateTag("products", "fast");
+    revalidateTag("products", "max");
 
     return {
       success: true,

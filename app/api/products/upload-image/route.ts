@@ -1,14 +1,22 @@
+import { createClient } from "@/lib/supabase/server";
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
-      return new Response("No file uploaded", {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return Response.json(
+        {
+          message: "No file uploaded",
+        },
+        {
+          status: 400,
+        },
+      );
     }
+
+    const supabase = await createClient();
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -17,26 +25,31 @@ export async function POST(request: Request) {
     const mimeType = file.type;
     const fileUri = `data:${mimeType};base64,${base64}`;
 
-    return new Response(
-      JSON.stringify({
-        message: "File uploaded successfully",
-        url: "",
-      }),
+    const { data, error } = await supabase.storage
+      .from("products")
+      .upload(file.name, arrayBuffer);
+
+    if (error) {
+      throw error;
+    }
+
+    return Response.json(
       {
-        status: 200,
-        statusText: "File uploaded successfully",
-        headers: { "Content-Type": "application/json" },
+        message: "File uploaded successfully",
+        url: data.fullPath,
+      },
+      {
+        status: 201,
       },
     );
   } catch (error) {
     console.error(`Error from upload product image: ${error}`);
-    return new Response(
-      JSON.stringify({
-        message: "Error from upload product image",
-      }),
+    return Response.json(
+      {
+        message: "Internal Server Error",
+      },
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
       },
     );
   }
