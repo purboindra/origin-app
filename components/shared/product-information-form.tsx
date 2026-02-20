@@ -1,6 +1,9 @@
+import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 import { CategoryOptions } from "./category-options";
 import CalorOptionsForm from "./color-options-form";
-import { SubmitButtonCreatePrudct } from "./submit-button-create-prudct";
+import { SubmitButtonCreatePruduct } from "./submit-button-create-pruduct";
 
 export default function ProductInformationForm() {
   return (
@@ -8,51 +11,17 @@ export default function ProductInformationForm() {
       <h1 className="text-4xl font-semibold text-blue-800">
         Keterangan Produk
       </h1>
-      {/* <FormField
-        control={form.control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Input placeholder="Nama Produk" {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-      <div className="flex space-x-4">
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Rp" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="stock"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Stok" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+      <Input className="rounded-md" id="name" name="name" autoComplete="off" placeholder="Evil Rabbit" />
+      <div className="flex gap-6">
+        <Input className="rounded-md" id="price" name="price" autoComplete="off" placeholder="Rp" />
+        <Input className="rounded-md" id="stock" name="stock" autoComplete="off" placeholder="Stok" />
       </div>
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => <Textarea placeholder="Deskripsi" {...field} />}
-      /> */}
+      <Textarea className="rounded-md" id="description" name="description" autoComplete="off" placeholder="Deskripsi" />
       <div className="flex space-x-12">
         <CategoryOptions />
         <CalorOptionsForm />
       </div>
-      <SubmitButtonCreatePrudct />
+      <SubmitButtonCreatePruduct />
     </div>
   );
 }

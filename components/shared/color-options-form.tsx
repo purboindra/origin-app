@@ -13,10 +13,10 @@ import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { createProductSchema } from "@/lib/validation";
 import { FormControl, FormField, FormItem } from "../ui/form";
+import { Field } from "../ui/field";
+import { Input } from "../ui/input";
 
 export default function CalorOptionsForm() {
-  const form = useFormContext<z.infer<typeof createProductSchema>>();
-
   const [color, setColor] = React.useState("#aabbcc");
   const [open, setOpen] = React.useState(false);
   const [colors, setColors] = React.useState<string[]>([]);
@@ -24,7 +24,6 @@ export default function CalorOptionsForm() {
   const handleColorChange = (newColor: string) => {
     setColor(newColor);
     setColors((prevColor) => [...prevColor, newColor]);
-    form.setValue("colors", [...colors, newColor]);
   };
 
   return (
@@ -34,29 +33,19 @@ export default function CalorOptionsForm() {
         <div className="flex space-x-1">
           {colors.map((color, index) => {
             return (
-              <FormField
-                key={color}
-                control={form.control}
-                name={`colors.${index}`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div>
+              <Field key={color}  className="w-8 h-8 rounded-full flex items-center justify-center">
+               <div>
                         <div
                           className="w-8 h-8 rounded-full flex items-center justify-center"
                           style={{ backgroundColor: color }}
                         />
                         <input
                           type="hidden"
-                          {...field}
+                          name={`colors.${index}`}
                           value={color}
-                          className="hidden"
                         />
                       </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              </Field>
             );
           })}
           {colors.length < 3 && (

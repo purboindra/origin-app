@@ -28,7 +28,6 @@ const initialState = {
 };
 
 export default function LoginForm() {
-  // const [state, dispatch, pending] = useActionState(login, initialState);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -37,12 +36,6 @@ export default function LoginForm() {
       password: "",
     },
   });
-
-  // useEffect(() => {
-  //   if (!state.success) {
-  //     toast.error(state.message);
-  //   }
-  // }, [state.message, state.success, state.timestamp]);
 
   return (
     <div className="flex flex-col gap-5 w-[70%] mt-8">
@@ -64,7 +57,6 @@ export default function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage>
-                  {/* {state.errors?.email && state.errors?.email[0]} */}
                 </FormMessage>
               </FormItem>
             )}
@@ -85,7 +77,6 @@ export default function LoginForm() {
                   />
                 </FormControl>
                 <FormMessage>
-                  {/* {state.errors?.password && state.errors?.password[0]} */}
                 </FormMessage>
               </FormItem>
             )}
@@ -93,7 +84,6 @@ export default function LoginForm() {
           <Button
             type="submit"
             className="mt-8 bg-red-500 hover:bg-red-600 w-[249px] py-6"
-            // disabled={pending}
           >
             Masuk
           </Button>

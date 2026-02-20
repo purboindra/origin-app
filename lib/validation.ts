@@ -1,5 +1,23 @@
 import * as z from "zod";
 
+export const MAX_FILE_SIZE = 1024 * 1024 * 5;
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
+export const imageSchema = z
+  .instanceof(File, { message: "Image is required" })
+  .refine((file) => file.size <= MAX_FILE_SIZE, "File too large")
+  .refine(
+    (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+    "Invalid file type",
+  );
+
+export type ImagePayload = z.infer<typeof imageSchema>;
+
 export const createProductSchema = z.object({
   name: z.string().min(1, {
     message: "Product name is required",
@@ -15,8 +33,8 @@ export const createProductSchema = z.object({
     message: "Product category is required",
   }),
   colors: z.array(z.string()).optional(),
-  thumbnail_image: z.union([z.string(), z.instanceof(File)]).optional(),
-  images: z.array(z.union([z.string(), z.instanceof(File)])).optional(),
+  thumbnail_image: imageSchema.optional(),
+  variant_images: z.array(imageSchema).optional(),
 });
 
 export const loginSchema = z.object({

@@ -31,10 +31,7 @@ export function CategoryOptions() {
     isLoading,
   } = useSWR<CategoryInterface[]>("/api/categories", fetcher);
 
-  const form = useFormContext<z.infer<typeof createProductSchema>>();
-
-  const value = "";
-
+  const [id,setId]=React.useState<number | null>();
   const [open, setOpen] = React.useState(false);
 
   if (error) return <div>Failed to load categories</div>;
@@ -54,13 +51,13 @@ export function CategoryOptions() {
           aria-expanded={open}
           className="w-[200px] justify-between text-base font-medium text-blue-800/50"
         >
-          {value
-            ? categories.find((framework) => String(framework.id) === value)
+          {id
+            ? categories.find((framework) => framework.id === id)
                 ?.label
             : "Kategori"}
           <ChevronsUpDown className="opacity-50" />
-          {value.length > 0 && (
-            <input type="hidden" name="category" value={value} />
+          {id && (
+            <input type="hidden" name="category" value={id} />
           )}
         </Button>
       </PopoverTrigger>
@@ -76,12 +73,9 @@ export function CategoryOptions() {
                 categories.map((framework) => (
                   <CommandItem
                     key={framework.id}
-                    value={framework.label}
+                    value={String(framework.id)}
                     onSelect={(currentValue) => {
-                      form.setValue(
-                        "category",
-                        currentValue === value ? "" : String(framework.id),
-                      );
+                      setId(Number(currentValue));
                       setOpen(false);
                     }}
                   >
@@ -89,7 +83,7 @@ export function CategoryOptions() {
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === String(framework.id)
+                        id === framework.id
                           ? "opacity-100"
                           : "opacity-0",
                       )}

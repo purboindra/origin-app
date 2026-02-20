@@ -1,6 +1,7 @@
 import { ProductsTableInfo } from "@/components/shared/products-table-info";
 import { TotalIncome } from "@/components/shared/total-income";
 import { ChartAreaIcon } from "lucide-react";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -17,7 +18,9 @@ export default function Home() {
             <h1 className="text-2xl font-semibold text-blue-800">
               Produk Terlaris
             </h1>
-            <ProductsTableInfo />
+            <Suspense>
+              <ProductsTableInfo />
+            </Suspense>
           </div>
           <div className="flex flex-1 flex-col bg-white rounded-md px-6 py-5">
             <h1 className="text-2xl font-semibold text-blue-800">

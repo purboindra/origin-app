@@ -1,57 +1,39 @@
 "use client";
 
 import { Camera } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
-import { Input } from "../ui/input";
+import { useRef, useState } from "react";
 
 export default function ThumbnailImageForm() {
-  const [image, setImage] = useState();
+  const [image, setImage] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <>
+    <div
+      className="relative flex h-[375px] w-[375px] rounded-xl bg-gray-300 items-center justify-center overflow-hidden cursor-pointer"
+      onClick={() => inputRef.current?.click()}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        id="thumbnail_image"
+        name="thumbnail_image"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) setImage(file);
+        }}
+      />
+
       {image ? (
-        <div>
-          <Image
-            src={
-              image instanceof File
-                ? URL.createObjectURL(image)
-                : typeof image === "string"
-                  ? image
-                  : ""
-            }
-            alt="Thumbnail Image"
-            fill
-            className="object-cover rounded-md"
-          />
-          <label
-            htmlFor="thumbnail_image"
-            className="absolute inset-0 z-10 cursor-pointer"
-          />
-          <Input
-            type="file"
-            accept="image/*"
-            name="thumbnail_image"
-            id="thumbnail_image"
-            className="hidden"
-            onChange={(e) => {}}
-          />
-        </div>
+        <img
+          src={URL.createObjectURL(image)}
+          alt="thumbnail"
+          className="w-full h-full object-cover rounded-xl"
+        />
       ) : (
-        <div className="flex w-full h-full items-center justify-center bg-gray-200 rounded-md">
-          <label htmlFor="thumbnail_image" className="cursor-pointer">
-            <Camera size={140} className="text-blue-800" />
-            <Input
-              type="file"
-              id="thumbnail_image"
-              name="thumbnail_image"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {}}
-            />
-          </label>
-        </div>
+        <Camera size={140} className="text-blue-800" />
       )}
-    </>
+    </div>
   );
 }

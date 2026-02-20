@@ -4,21 +4,45 @@ import { createClient } from "@/lib/supabase/server";
 import { createProductSchema } from "@/lib/validation";
 import { ProductInterface } from "@/types";
 import { FetchProductsParams } from "@/types/params.index";
-import { File } from "buffer";
 import { revalidateTag } from "next/cache";
 
 export async function createProduct(prevState: any, formData: FormData) {
   console.log(Object.fromEntries(formData.entries()));
 
-  const thumbnail_image = formData.get("thumbnail_image");
+  const thumbnail_image = formData.get("thumbnail_image") as File;
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const price = Number.parseFloat(formData.get("price") as string);
   const stock = Number.parseFloat(formData.get("stock") as string);
   const category = formData.get("category") as string;
-  const colors = formData.getAll("colors") as string[];
 
-  const fileFormData = new FormData();
+  const supabase = await createClient();
+
+  let variantImages: File[] = [];
+  let colors: string[] = [];
+
+  let imageIndex = 0;
+
+  while (formData.has(`variant_images.${imageIndex}`)) {
+    const image = formData.get(`variant_images.${imageIndex}`);
+    console.log(image);
+    if (image instanceof File && image.size > 0) {
+      variantImages.push(image);
+    }
+    imageIndex++;
+  }
+
+  console.log(`Variant images: ${variantImages.length}`);
+
+  let colorIndex = 0;
+
+  while (formData.has(`colors.${colorIndex}`)) {
+    const color = formData.get(`colors.${colorIndex}`);
+    if (color) {
+      colors.push(String(color));
+    }
+    colorIndex++;
+  }
 
   const validateFields = createProductSchema.safeParse({
     name,
@@ -28,6 +52,7 @@ export async function createProduct(prevState: any, formData: FormData) {
     category,
     colors,
     thumbnail_image,
+    variant_images: variantImages,
   });
 
   if (!validateFields.success) {
@@ -35,58 +60,52 @@ export async function createProduct(prevState: any, formData: FormData) {
   }
 
   try {
-    let thumbnail_image_url = "";
-    const images_url: string[] = [];
-    const {
-      category,
-      colors,
-      description,
-      name,
-      price,
-      stock,
-      thumbnail_image,
-    } = validateFields.data;
+    const thumbnailImage = validateFields.data.thumbnail_image;
+    let thumbnailImageUrl = "";
+    const { data, error: thumbnailError } = await supabase.storage
+      .from("products")
+      .upload(thumbnailImage!.name, thumbnailImage!);
 
-    if (
-      thumbnail_image &&
-      thumbnail_image instanceof File &&
-      thumbnail_image.size > 0
-    ) {
-      const result = await fetch("/api/products/upload-image", {
-        method: "POST",
-        body: (() => {
-          fileFormData.append("file", thumbnail_image);
-          return fileFormData;
-        })(),
-      });
-
-      if (result.ok) {
-        thumbnail_image_url = (await result.json()).url;
-      }
+    if (thumbnailError) {
+      console.error("Error upload thumbnail image", thumbnailError);
+      throw thumbnailError;
     }
 
-    let imageIndex = 0;
+    thumbnailImageUrl = data.fullPath;
 
-    while (formData.has(`images.${imageIndex}`)) {
-      fileFormData.delete("file");
+    const variantImagesUrl: string[] = [];
 
-      const image = formData.get(`images.${imageIndex}`);
-      if (image instanceof File && image.size > 0) {
-        const result = await fetch("/api/products/upload-image", {
-          method: "POST",
-          body: (() => {
-            fileFormData.append("file", image);
-            return fileFormData;
-          })(),
-        });
+    for (let i = 0; i < variantImages.length; i++) {
+      const image = variantImages[i];
+      const { data, error: variantImageError } = await supabase.storage
+        .from("products")
+        .upload(image.name, image);
 
-        if (result.ok) {
-          const url = (await result.json()).url;
-          images_url.push(url);
-        }
+      if (variantImageError) {
+        console.error("Error upload variant image", variantImageError);
+        throw variantImageError;
       }
 
-      imageIndex++;
+      variantImagesUrl.push(data.fullPath);
+    }
+
+    const { category, description, name, price, stock, thumbnail_image } =
+      validateFields.data;
+
+    const { error } = await supabase.from("products").insert({
+      category_id: category,
+      name,
+      description,
+      stock,
+      price,
+      colors,
+      thumbnail_image: thumbnailImageUrl,
+      variant_images: variantImagesUrl,
+    });
+
+    if (error) {
+      console.error("Error insert product", error);
+      throw error;
     }
 
     revalidateTag("products", "max");
