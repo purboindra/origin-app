@@ -130,7 +130,22 @@ export async function fetchProducts(params: FetchProductsParams) {
     const { searchQuery, id } = params;
 
     const supabase = await createClient();
-    const { data, error } = await supabase.from("products").select();
+    const { data, error } = await supabase.from("products").select(
+      `
+        id,
+        name,
+        description,
+        price,
+        stock,
+        thumbnail_image,
+        variant_images,
+        colors,
+        categories(
+          id,
+          label
+        )
+      `,
+    );
 
     if (error) {
       throw error;
@@ -151,7 +166,7 @@ export async function fetchProducts(params: FetchProductsParams) {
 
     const products = data.map((item: any) => ({
       id: item.id,
-      category: item.category,
+      category: item.categories.label,
       name: item.name,
       description: item.description,
       price: item.price,
