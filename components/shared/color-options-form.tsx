@@ -1,25 +1,26 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import React from "react";
-import { HexColorPicker, HexColorInput } from "react-colorful";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Plus } from "lucide-react";
+import React from "react";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { createProductSchema } from "@/lib/validation";
-import { FormControl, FormField, FormItem } from "../ui/form";
 import { Field } from "../ui/field";
-import { Input } from "../ui/input";
 
-export default function CalorOptionsForm() {
+interface CalorOptionsFormProps {
+  initialColors: string[];
+}
+
+export default function CalorOptionsForm({
+  initialColors,
+}: CalorOptionsFormProps) {
   const [color, setColor] = React.useState("#aabbcc");
   const [open, setOpen] = React.useState(false);
-  const [colors, setColors] = React.useState<string[]>([]);
+  const [colors, setColors] = React.useState<string[]>(initialColors);
 
   const handleColorChange = (newColor: string) => {
     setColor(newColor);
@@ -33,18 +34,17 @@ export default function CalorOptionsForm() {
         <div className="flex space-x-1">
           {colors.map((color, index) => {
             return (
-              <Field key={color}  className="w-8 h-8 rounded-full flex items-center justify-center">
-               <div>
-                        <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: color }}
-                        />
-                        <input
-                          type="hidden"
-                          name={`colors.${index}`}
-                          value={color}
-                        />
-                      </div>
+              <Field
+                key={color}
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+              >
+                <div>
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: color }}
+                  />
+                  <input type="hidden" name={`colors.${index}`} value={color} />
+                </div>
               </Field>
             );
           })}

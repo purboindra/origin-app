@@ -24,10 +24,10 @@ export default async function DashboardProducts({
   }
 
   return (
-    <section className="w-full min-h-screen p-8">
-     <Suspense>
-       <ProductTable products={data} />
-     </Suspense>
-    </section>
+    <Suspense fallback="Loading...">
+      <section className="w-full min-h-screen p-8">
+        <ProductTable products={data} />
+      </section>
+    </Suspense>
   );
 }

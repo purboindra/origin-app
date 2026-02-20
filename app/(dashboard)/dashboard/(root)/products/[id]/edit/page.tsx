@@ -1,5 +1,5 @@
-import { fetchProducts } from "@/action/products.action";
-import CreateProductsContent from "@/components/shared/create-products-content";
+import { fetchProductById } from "@/action/products.action";
+import EditProductsContent from "@/components/shared/edit-products-content";
 
 export default async function DashboardProducts({
   params,
@@ -8,22 +8,21 @@ export default async function DashboardProducts({
 }) {
   const id = (await params).id || "";
 
-  const { data, message, success } = await fetchProducts({
-    searchQuery: "",
-    id: id,
-  });
+  const { data, message, success } = await fetchProductById(id);
 
   if (!data || !success) {
     return (
       <section className="w-full min-h-screen px-8 py-8 flex items-center justify-center">
-        <h1 className="text-4xl font-semibold text-blue-800">{`${message} `}</h1>
+        <h1 className="text-4xl font-semibold text-blue-800">{`${message}`}</h1>
       </section>
     );
   }
 
+  console.log("Product by id", data);
+
   return (
     <section className="w-full min-h-screen px-8 py-8">
-      <CreateProductsContent product={data[0]} />
+      <EditProductsContent product={data!} />
     </section>
   );
 }

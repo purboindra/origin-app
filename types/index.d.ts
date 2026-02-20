@@ -33,7 +33,7 @@ export interface ProductInterface {
   price: number;
   stock: number;
   thumbnail_image: string | null;
-  variant_images: string[];
+  variant_images: File[];
   colors: string[];
   category: CategoryInterface;
 }

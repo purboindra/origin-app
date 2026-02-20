@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { createProductSchema } from "@/lib/validation";
+import { createProductSchema, editProductSchema } from "@/lib/validation";
 import { ProductInterface } from "@/types";
 import { FetchProductsParams } from "@/types/params.index";
 import { revalidateTag } from "next/cache";
@@ -32,8 +32,6 @@ export async function createProduct(prevState: any, formData: FormData) {
     imageIndex++;
   }
 
-  console.log(`Variant images: ${variantImages.length}`);
-
   let colorIndex = 0;
 
   while (formData.has(`colors.${colorIndex}`)) {
@@ -61,7 +59,6 @@ export async function createProduct(prevState: any, formData: FormData) {
 
   try {
     const thumbnailImage = validateFields.data.thumbnail_image;
-    let thumbnailImageUrl = "";
     const { data, error: thumbnailError } = await supabase.storage
       .from("products")
       .upload(thumbnailImage!.name, thumbnailImage!);
@@ -71,7 +68,7 @@ export async function createProduct(prevState: any, formData: FormData) {
       throw thumbnailError;
     }
 
-    thumbnailImageUrl = data.path;
+    const thumbnailImageUrl = data.path;
 
     const variantImagesUrl: string[] = [];
 
@@ -123,6 +120,91 @@ export async function createProduct(prevState: any, formData: FormData) {
       timestamp: Date.now(),
     };
   }
+}
+
+export async function fetchProductById(id: string) {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        `
+        id,
+        name,
+        description,
+        price,
+        stock,
+        thumbnail_image,
+        variant_images,
+        colors,
+        categories(
+          id,
+          label
+        )
+      `,
+      )
+      .eq("id", id)
+      .limit(1);
+
+    if (error) {
+      throw error;
+    }
+
+    const firstData = data[0];
+
+    const getPublicUrl = (path: string) => {
+      return supabase.storage.from("products").getPublicUrl(path).data
+        .publicUrl;
+    };
+
+    const variantImagesUrl = firstData.variant_images.map((imagePath: string) =>
+      getPublicUrl(imagePath),
+    );
+
+    let variantImages: File[] = [];
+
+    for (let i = 0; i < variantImagesUrl.length; i++) {
+      const image = variantImagesUrl[i];
+      const file = await imageUrlToFile(image);
+      variantImages.push(file);
+    }
+
+    console.debug("Variant images", variantImages);
+
+    const product = {
+      id: firstData.id,
+      category: firstData.categories,
+      name: firstData.name,
+      description: firstData.description,
+      price: firstData.price,
+      stock: firstData.stock,
+      thumbnail_image: getPublicUrl(firstData.thumbnail_image),
+      variant_images: variantImages,
+      colors: firstData.colors,
+    } as unknown as ProductInterface;
+
+    return {
+      data: product,
+      message: "Success get product",
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error fetch product by id", error);
+    return {
+      data: null,
+      message: "Error fetch products",
+      success: false,
+    };
+  }
+}
+
+async function imageUrlToFile(imageUrl: string): Promise<File> {
+  const response = await fetch(imageUrl);
+  const blob = await response.blob();
+  const fileName = imageUrl.split("/").pop();
+  const file = new File([blob], fileName!, { type: "image/jpeg" });
+  return file;
 }
 
 export async function fetchProducts(params: FetchProductsParams) {
@@ -180,7 +262,7 @@ export async function fetchProducts(params: FetchProductsParams) {
 
     const products = data.map((item: any) => ({
       id: item.id,
-      category: item.categories.label,
+      category: item.categories,
       name: item.name,
       description: item.description,
       price: item.price,
@@ -211,7 +293,122 @@ export async function fetchProducts(params: FetchProductsParams) {
 
 export async function deleteProduct(id: number) {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("products").delete().eq("id", id);
-  console.log(data, error);
+  await supabase.from("products").delete().eq("id", id);
   revalidateTag("products", "max");
+}
+
+export async function editProduct(prevState: any, formData: FormData) {
+  console.log(Object.fromEntries(formData.entries()));
+
+  const thumbnail_image = formData.get("thumbnail_image") as File;
+  const name = formData.get("name") as string;
+  const description = formData.get("description") as string;
+  const price = Number.parseFloat(formData.get("price") as string);
+  const stock = Number.parseFloat(formData.get("stock") as string);
+  const category = formData.get("category") as string;
+
+  const supabase = await createClient();
+
+  let variantImages: File[] = [];
+  let colors: string[] = [];
+
+  let imageIndex = 0;
+
+  while (formData.has(`variant_images.${imageIndex}`)) {
+    const image = formData.get(`variant_images.${imageIndex}`);
+    console.log(image);
+    if (image instanceof File && image.size > 0) {
+      variantImages.push(image);
+    }
+    imageIndex++;
+  }
+
+  let colorIndex = 0;
+
+  while (formData.has(`colors.${colorIndex}`)) {
+    const color = formData.get(`colors.${colorIndex}`);
+    if (color) {
+      colors.push(String(color));
+    }
+    colorIndex++;
+  }
+
+  const validateFields = editProductSchema.safeParse({
+    name,
+    description,
+    price,
+    stock,
+    category,
+    colors,
+    thumbnail_image,
+    variant_images: variantImages,
+  });
+
+  if (!validateFields.success) {
+    throw new Error(validateFields.error.message);
+  }
+
+  try {
+    const thumbnailImage = validateFields.data.thumbnail_image;
+    const { data, error: thumbnailError } = await supabase.storage
+      .from("products")
+      .upload(thumbnailImage!.name, thumbnailImage!);
+
+    if (thumbnailError) {
+      console.error("Error upload thumbnail image", thumbnailError);
+      throw thumbnailError;
+    }
+
+    const thumbnailImageUrl = data.path;
+
+    const variantImagesUrl: string[] = [];
+
+    for (let i = 0; i < variantImages.length; i++) {
+      const image = variantImages[i];
+      const { data, error: variantImageError } = await supabase.storage
+        .from("products")
+        .upload(image.name, image);
+
+      if (variantImageError) {
+        console.error("Error upload variant image", variantImageError);
+        throw variantImageError;
+      }
+
+      variantImagesUrl.push(data.path);
+    }
+
+    const { category, description, name, price, stock, thumbnail_image } =
+      validateFields.data;
+
+    const { error } = await supabase.from("products").insert({
+      category_id: category,
+      name,
+      description,
+      stock,
+      price,
+      colors,
+      thumbnail_image: thumbnailImageUrl,
+      variant_images: variantImagesUrl,
+    });
+
+    if (error) {
+      console.error("Error insert product", error);
+      throw error;
+    }
+
+    revalidateTag("products", "max");
+
+    return {
+      success: true,
+      message: "Product created successfully",
+      timestamp: Date.now(),
+    };
+  } catch (error) {
+    console.error("Error create product", error);
+    return {
+      success: false,
+      message: "Product created successfully",
+      timestamp: Date.now(),
+    };
+  }
 }

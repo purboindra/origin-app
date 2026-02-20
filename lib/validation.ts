@@ -37,6 +37,25 @@ export const createProductSchema = z.object({
   variant_images: z.array(imageSchema).optional(),
 });
 
+export const editProductSchema = z.object({
+  name: z.string().min(1, {
+    message: "Product name is required",
+  }),
+  description: z.string().min(1, {
+    message: "Product description is required",
+  }),
+  price: z.number().min(1, {
+    message: "Product price is required",
+  }),
+  stock: z.number().min(0, { message: "Product stock should be positive" }),
+  category: z.string().min(1, {
+    message: "Product category is required",
+  }),
+  colors: z.array(z.string()).optional(),
+  thumbnail_image: imageSchema.optional(),
+  variant_images: z.array(imageSchema).optional(),
+});
+
 export const loginSchema = z.object({
   email: z
     .string()

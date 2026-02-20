@@ -1,20 +1,24 @@
 "use client";
 
 import { Camera, Plus, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 
 const INITIAL_SLOTS = 3;
 
-export default function VariantImagesForm() {
+export default function VariantImagesForm({
+  variantImages,
+}: {
+  variantImages: File[];
+}) {
   const [images, setImages] = useState<(File | null)[]>(
-    Array(INITIAL_SLOTS).fill(null)
+    Array(INITIAL_SLOTS).fill(null),
   );
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -46,6 +50,12 @@ export default function VariantImagesForm() {
     });
   };
 
+  useEffect(() => {
+    if (variantImages.length > 0) {
+      setImages(variantImages);
+    }
+  }, [variantImages]);
+
   return (
     <div className="flex w-full overflow-x-auto space-x-3 items-center">
       <div className="flex space-x-3 items-center">
@@ -70,13 +80,13 @@ export default function VariantImagesForm() {
                   alt={file.name}
                   className="w-full h-full object-cover rounded-md"
                 />
-                <Button
+                <button
                   type="button"
                   onClick={() => handleRemove(index)}
-                  className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                  className="absolute top-2.5 right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 hover:cursor-pointer"
                 >
                   <X size={12} />
-                </Button>
+                </button>
               </>
             ) : (
               <label

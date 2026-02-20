@@ -8,13 +8,10 @@ import {
 } from "@/components/ui/popover";
 import { fetcher } from "@/lib/fetcher";
 import { cn } from "@/lib/utils";
-import { createProductSchema } from "@/lib/validation";
 import { CategoryInterface } from "@/types";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
-import { useFormContext } from "react-hook-form";
 import useSWR from "swr";
-import { z } from "zod";
 import {
   Command,
   CommandEmpty,
@@ -24,15 +21,21 @@ import {
   CommandList,
 } from "../ui/command";
 
-export function CategoryOptions() {
+interface CategoryOptionsProps {
+  categoryId: number;
+}
+
+export function CategoryOptions({ categoryId }: CategoryOptionsProps) {
   const {
     data: categories,
     error,
     isLoading,
   } = useSWR<CategoryInterface[]>("/api/categories", fetcher);
 
-  const [id,setId]=React.useState<number | null>();
+  const [id, setId] = React.useState<number | null>(categoryId);
   const [open, setOpen] = React.useState(false);
+
+  console.log("Category options", categoryId);
 
   if (error) return <div>Failed to load categories</div>;
 
@@ -52,13 +55,10 @@ export function CategoryOptions() {
           className="w-[200px] justify-between text-base font-medium text-blue-800/50"
         >
           {id
-            ? categories.find((framework) => framework.id === id)
-                ?.label
+            ? categories.find((framework) => framework.id === id)?.label
             : "Kategori"}
           <ChevronsUpDown className="opacity-50" />
-          {id && (
-            <input type="hidden" name="category" value={id} />
-          )}
+          {id && <input type="hidden" name="category" value={id} />}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
@@ -83,9 +83,7 @@ export function CategoryOptions() {
                     <Check
                       className={cn(
                         "ml-auto",
-                        id === framework.id
-                          ? "opacity-100"
-                          : "opacity-0",
+                        id === framework.id ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>

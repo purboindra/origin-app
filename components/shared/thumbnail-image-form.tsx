@@ -1,9 +1,16 @@
 "use client";
 
 import { Camera } from "lucide-react";
+import Image from "next/image";
 import { useRef, useState } from "react";
 
-export default function ThumbnailImageForm() {
+interface ThumbnailImageFormProps {
+  thumbnailImage: string | null;
+}
+
+export default function ThumbnailImageForm({
+  thumbnailImage,
+}: ThumbnailImageFormProps) {
   const [image, setImage] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +32,14 @@ export default function ThumbnailImageForm() {
         }}
       />
 
-      {image ? (
+      {thumbnailImage ? (
+        <Image
+          src={thumbnailImage}
+          alt="thumbnail"
+          className="w-full h-full object-cover rounded-xl"
+          fill
+        />
+      ) : image ? (
         <img
           src={URL.createObjectURL(image)}
           alt="thumbnail"
