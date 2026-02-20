@@ -71,7 +71,7 @@ export async function createProduct(prevState: any, formData: FormData) {
       throw thumbnailError;
     }
 
-    thumbnailImageUrl = data.fullPath;
+    thumbnailImageUrl = data.path;
 
     const variantImagesUrl: string[] = [];
 
@@ -86,7 +86,7 @@ export async function createProduct(prevState: any, formData: FormData) {
         throw variantImageError;
       }
 
-      variantImagesUrl.push(data.fullPath);
+      variantImagesUrl.push(data.path);
     }
 
     const { category, description, name, price, stock, thumbnail_image } =
@@ -130,10 +130,7 @@ export async function fetchProducts(params: FetchProductsParams) {
     const { searchQuery, id } = params;
 
     const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("products")
-      .select()
-      .textSearch("name", searchQuery ?? "");
+    const { data, error } = await supabase.from("products").select();
 
     if (error) {
       throw error;
@@ -147,16 +144,26 @@ export async function fetchProducts(params: FetchProductsParams) {
       };
     }
 
-    const products = data.map((data: any) => ({
-      id: data._id.toString(),
-      category: data.category,
-      name: data.name,
-      description: data.description,
-      price: data.price,
-      stock: data.stock,
-      thumbnail_image: data.thumbnail_image,
-      images: data.images,
-      colors: data.colors,
+    const getPublicUrl = (path: string) => {
+      console.log("Get public url", path);
+      return supabase.storage.from("products").getPublicUrl(path.split("/")[1])
+        .data.publicUrl;
+    };
+
+    const products = data.map((item: any) => ({
+      id: item.id,
+      category: item.category,
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      stock: item.stock,
+      thumbnail_image: item.thumbnail_image
+        ? getPublicUrl(item.thumbnail_image)
+        : null,
+      variant_images: Array.isArray(item.variant_images)
+        ? item.variant_images.map((path: string) => getPublicUrl(path))
+        : [],
+      colors: item.colors ?? [],
     })) as ProductInterface[];
 
     return {

@@ -6,6 +6,7 @@ import React, { useActionState } from "react";
 import { toast } from "sonner";
 import ProductInformationForm from "./product-information-form";
 import UploadImageComponent from "./upload-image-component";
+import { redirect } from "next/navigation";
 
 const initialState = {
   message: "",
@@ -26,6 +27,7 @@ export default function CreateProductsContent({ product }: ProductProps) {
         toast.error(state.message);
       } else {
         toast.success(state.message);
+        redirect("/dashboard");
       }
     }
   }, [state.message, state.timestamp, state.success]);

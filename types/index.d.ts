@@ -32,8 +32,8 @@ export interface ProductInterface {
   description: string;
   price: number;
   stock: number;
-  thumbnail_image: string;
-  images: string[];
+  thumbnail_image: string | null;
+  variant_images: string[];
   colors: string[];
   category: CategoryInterface;
 }

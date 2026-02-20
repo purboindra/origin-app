@@ -1,5 +1,6 @@
 import { fetchProducts } from "@/action/products.action";
 import { ProductTable } from "@/components/shared/product-table";
+import { Suspense } from "react";
 
 export default async function DashboardProducts({
   searchParams,
@@ -24,7 +25,9 @@ export default async function DashboardProducts({
 
   return (
     <section className="w-full min-h-screen p-8">
-      <ProductTable products={data} />
+     <Suspense>
+       <ProductTable products={data} />
+     </Suspense>
     </section>
   );
 }
