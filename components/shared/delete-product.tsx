@@ -2,24 +2,18 @@
 
 import { deleteProduct } from "@/action/products.action";
 import { Trash } from "lucide-react";
-import React, { useActionState, useEffect } from "react";
-import { toast } from "sonner";
+import { useFormStatus } from "react-dom";
+import { Button } from "../ui/button";
 
-export function DeleteProduct({ id }: { id: string }) {
-  const [state, dispatch] = useActionState(deleteProduct, {
-    message: "",
-    success: false,
-  });
+export function DeleteProduct({ id }: { id: number }) {
+ const deleteProductWithId = deleteProduct.bind(null, id);
 
-  useEffect(() => {
-    if (!state.success) {
-      toast.error(state.message);
-    }
-  }, [state.message, state.success, state.timestamp]);
+   const { pending } = useFormStatus()
 
+ 
   return (
-    <form action={dispatch}>
-      <button type="submit" className="hover:cursor-pointer">
+    <form action={deleteProductWithId}>
+      <button type="submit" className="hover:cursor-pointer" disabled={pending}>
         <Trash className="w-auto h-auto text-red-500 p-1 shrink-0" />
       </button>
       <input type="hidden" value={id} name="id" />

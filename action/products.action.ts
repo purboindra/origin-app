@@ -127,11 +127,16 @@ export async function createProduct(prevState: any, formData: FormData) {
 
 export async function fetchProducts(params: FetchProductsParams) {
   try {
-    const { searchQuery, id } = params;
+    const { searchQuery, page, limit } = params;
 
     const supabase = await createClient();
-    const { data, error } = await supabase.from("products").select(
-      `
+
+    const pageNumber = Number(page ?? "1");
+    const pageSize = Number(limit ?? "20");
+    const from = (pageNumber - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    let query = supabase.from("products").select(`
         id,
         name,
         description,
@@ -144,12 +149,21 @@ export async function fetchProducts(params: FetchProductsParams) {
           id,
           label
         )
-      `,
-    );
+      `);
+
+    if (searchQuery) {
+      query = query.ilike("name", `%${searchQuery}%`);
+    }
+
+    const { data: rawData, error } = await query
+      .range(from, to)
+      .order("created_at", { ascending: false });
 
     if (error) {
       throw error;
     }
+
+    const data = rawData ?? [];
 
     if (!data || (Array.isArray(data) && data.length === 0)) {
       return {
@@ -195,42 +209,9 @@ export async function fetchProducts(params: FetchProductsParams) {
   }
 }
 
-export async function deleteProduct(prevState: any, formData: FormData) {
-  try {
-    const id = formData.get("id") as string;
-
-    if (!id) {
-      return {
-        message: "Product not found",
-        success: false,
-        timestamp: Date.now(),
-      };
-    }
-
-    // const db = await getDb();
-
-    // const result = await db.collection("products").deleteOne({});
-
-    // if (result.deletedCount === 0) {
-    //   return {
-    //     message: "Product not found",
-    //     success: false,
-    //   };
-    // }
-
-    // revalidateTag("products", "fast");
-
-    return {
-      message: "Success delete product!",
-      success: true,
-      timestamp: Date.now(),
-    };
-  } catch (error) {
-    console.error("Error delete product", error);
-    return {
-      message: "Error delete product",
-      success: false,
-      timestamp: Date.now(),
-    };
-  }
+export async function deleteProduct(id: number) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("products").delete().eq("id", id);
+  console.log(data, error);
+  revalidateTag("products", "max");
 }
