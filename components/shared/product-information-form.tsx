@@ -6,7 +6,7 @@ import CalorOptionsForm from "./color-options-form";
 import { SubmitButtonCreatePruduct } from "./submit-button-create-pruduct";
 
 interface ProductInformationFormProps {
-  product: ProductInterface;
+  product?: ProductInterface;
 }
 
 export default function ProductInformationForm({
@@ -22,7 +22,7 @@ export default function ProductInformationForm({
         id="name"
         name="name"
         autoComplete="off"
-        defaultValue={product.name}
+        defaultValue={product?.name}
       />
       <div className="flex gap-6">
         <Input
@@ -30,14 +30,14 @@ export default function ProductInformationForm({
           id="price"
           name="price"
           autoComplete="off"
-          defaultValue={product.price}
+          defaultValue={product?.price}
         />
         <Input
           className="rounded-md"
           id="stock"
           name="stock"
           autoComplete="off"
-          defaultValue={product.stock}
+          defaultValue={product?.stock}
         />
       </div>
       <Textarea
@@ -45,11 +45,11 @@ export default function ProductInformationForm({
         id="description"
         name="description"
         autoComplete="off"
-        defaultValue={product.description}
+        defaultValue={product?.description}
       />
       <div className="flex space-x-12">
-        <CategoryOptions categoryId={product.category.id} />
-        <CalorOptionsForm initialColors={product.colors} />
+        <CategoryOptions categoryId={product?.category.id} />
+        <CalorOptionsForm initialColors={product?.colors} />
       </div>
       <SubmitButtonCreatePruduct />
     </div>

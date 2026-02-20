@@ -22,7 +22,7 @@ import {
 } from "../ui/command";
 
 interface CategoryOptionsProps {
-  categoryId: number;
+  categoryId?: number;
 }
 
 export function CategoryOptions({ categoryId }: CategoryOptionsProps) {
@@ -32,7 +32,7 @@ export function CategoryOptions({ categoryId }: CategoryOptionsProps) {
     isLoading,
   } = useSWR<CategoryInterface[]>("/api/categories", fetcher);
 
-  const [id, setId] = React.useState<number | null>(categoryId);
+  const [id, setId] = React.useState<number | null>(categoryId ?? null);
   const [open, setOpen] = React.useState(false);
 
   console.log("Category options", categoryId);

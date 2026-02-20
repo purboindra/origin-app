@@ -9,7 +9,7 @@ const INITIAL_SLOTS = 3;
 export default function VariantImagesForm({
   variantImages,
 }: {
-  variantImages: File[];
+  variantImages: File[] | null;
 }) {
   const [images, setImages] = useState<(File | null)[]>(
     Array(INITIAL_SLOTS).fill(null),
@@ -51,7 +51,7 @@ export default function VariantImagesForm({
   };
 
   useEffect(() => {
-    if (variantImages.length > 0) {
+    if (variantImages && variantImages.length > 0) {
       setImages(variantImages);
     }
   }, [variantImages]);

@@ -29,7 +29,7 @@ export default function CreateProductsContent() {
   return (
     <form action={dispatch}>
       <div className="flex space-x-4 w-full h-full bg-white rounded-md p-12 gap-8">
-        <UploadImageComponent />
+        <UploadImageComponent thumbnailImage={null} variantImages={null} />
         <ProductInformationForm />
       </div>
     </form>

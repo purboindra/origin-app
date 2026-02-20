@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 import { Field } from "../ui/field";
 
 interface CalorOptionsFormProps {
-  initialColors: string[];
+  initialColors?: string[];
 }
 
 export default function CalorOptionsForm({
@@ -20,7 +20,7 @@ export default function CalorOptionsForm({
 }: CalorOptionsFormProps) {
   const [color, setColor] = React.useState("#aabbcc");
   const [open, setOpen] = React.useState(false);
-  const [colors, setColors] = React.useState<string[]>(initialColors);
+  const [colors, setColors] = React.useState<string[]>(initialColors ?? []);
 
   const handleColorChange = (newColor: string) => {
     setColor(newColor);

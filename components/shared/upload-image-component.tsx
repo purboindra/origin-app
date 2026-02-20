@@ -5,7 +5,7 @@ import VariantImagesForm from "./variant-images-form";
 
 interface UploadImageComponentProps {
   thumbnailImage: string | null;
-  variantImages: File[];
+  variantImages: File[] | null;
 }
 
 export default function UploadImageComponent({

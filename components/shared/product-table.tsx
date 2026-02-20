@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,11 +23,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Image from "next/image";
-import { Edit } from "lucide-react";
 import { ProductInterface } from "@/types";
-import { DeleteProduct } from "./delete-product";
+import { Edit } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { DeleteProduct } from "./delete-product";
 
 export const productColumns: ColumnDef<ProductInterface>[] = [
   {
@@ -105,7 +105,7 @@ export const productColumns: ColumnDef<ProductInterface>[] = [
             <Edit className="w-auto h-auto text-gray-400 p-1 shrink-0" />
           </Link>{" "}
           <hr className="w-[1px] h-full border border-gray-400" />
-          <DeleteProduct id={row.original.id} />
+          <DeleteProduct id={Number(row.original.id)} />
         </div>
       );
     },
@@ -119,7 +119,7 @@ interface ProductTableProps {
 export function ProductTable({ products }: ProductTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -158,7 +158,7 @@ export function ProductTable({ products }: ProductTableProps) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
