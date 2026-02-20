@@ -145,9 +145,8 @@ export async function fetchProducts(params: FetchProductsParams) {
     }
 
     const getPublicUrl = (path: string) => {
-      console.log("Get public url", path);
-      return supabase.storage.from("products").getPublicUrl(path.split("/")[1])
-        .data.publicUrl;
+      return supabase.storage.from("products").getPublicUrl(path).data
+        .publicUrl;
     };
 
     const products = data.map((item: any) => ({
