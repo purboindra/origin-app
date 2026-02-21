@@ -1,6 +1,6 @@
 "use client";
 
-import { createProduct } from "@/action/products.action";
+import { editProduct } from "@/action/products.action";
 import { ProductInterface } from "@/types";
 import { redirect } from "next/navigation";
 import React, { useActionState } from "react";
@@ -21,7 +21,7 @@ interface EditProductsContentProps {
 export default function EditProductsContent({
   product,
 }: EditProductsContentProps) {
-  const [state, dispatch] = useActionState(createProduct, initialState);
+  const [state, dispatch] = useActionState(editProduct, initialState);
 
   React.useEffect(() => {
     const isSuccess = state.success;
@@ -35,6 +35,7 @@ export default function EditProductsContent({
 
   return (
     <form action={dispatch}>
+      <input type="hidden" name="id" value={product.id} />
       <div className="flex space-x-4 w-full h-full bg-white rounded-md p-12 gap-8">
         <UploadImageComponent
           thumbnailImage={product.thumbnail_image}

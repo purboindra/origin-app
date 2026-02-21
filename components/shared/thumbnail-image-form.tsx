@@ -1,11 +1,11 @@
 "use client";
 
+import { blobToFile } from "@/lib/utils";
 import { Camera } from "lucide-react";
-import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ThumbnailImageFormProps {
-  thumbnailImage: string | null;
+  thumbnailImage: File | Blob | string | null;
 }
 
 export default function ThumbnailImageForm({
@@ -13,6 +13,40 @@ export default function ThumbnailImageForm({
 }: ThumbnailImageFormProps) {
   const [image, setImage] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const syncImage = async () => {
+      if (!thumbnailImage) return;
+
+      let fileToSync: File | null = null;
+
+      if (thumbnailImage instanceof File) {
+        fileToSync = thumbnailImage;
+      } else if (thumbnailImage instanceof Blob) {
+        fileToSync = new File([thumbnailImage], "thumbnail.jpg", {
+          type: thumbnailImage.type,
+        });
+      } else if (typeof thumbnailImage === "string") {
+        try {
+          fileToSync = await blobToFile(thumbnailImage, "thumbnail.jpg");
+        } catch (error) {
+          console.error("Error fetching image URL:", error);
+        }
+      }
+
+      if (fileToSync) {
+        setImage(fileToSync);
+
+        if (inputRef.current) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(fileToSync);
+          inputRef.current.files = dataTransfer.files;
+        }
+      }
+    };
+
+    syncImage();
+  }, [thumbnailImage]);
 
   return (
     <div
@@ -32,14 +66,7 @@ export default function ThumbnailImageForm({
         }}
       />
 
-      {thumbnailImage ? (
-        <Image
-          src={thumbnailImage}
-          alt="thumbnail"
-          className="w-full h-full object-cover rounded-xl"
-          fill
-        />
-      ) : image ? (
+      {image ? (
         <img
           src={URL.createObjectURL(image)}
           alt="thumbnail"

@@ -20,8 +20,6 @@ export async function login(formData: FormData) {
     redirect("/error");
   }
 
-  console.log(userData);
-
   revalidatePath("/dashboard", "layout");
   redirect("/dashboard");
 }

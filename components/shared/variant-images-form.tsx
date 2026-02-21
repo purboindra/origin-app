@@ -1,5 +1,6 @@
 "use client";
 
+import { blobToFile } from "@/lib/utils";
 import { Camera, Plus, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
@@ -9,7 +10,7 @@ const INITIAL_SLOTS = 3;
 export default function VariantImagesForm({
   variantImages,
 }: {
-  variantImages: File[] | null;
+  variantImages: string[] | null;
 }) {
   const [images, setImages] = useState<(File | null)[]>(
     Array(INITIAL_SLOTS).fill(null),
@@ -51,9 +52,29 @@ export default function VariantImagesForm({
   };
 
   useEffect(() => {
-    if (variantImages && variantImages.length > 0) {
-      setImages(variantImages);
-    }
+    const syncImages = async () => {
+      if (!variantImages || variantImages.length === 0) return;
+
+      const syncedFiles: (File | null)[] = await Promise.all(
+        variantImages.map(async (item, index) => {
+          if (!item) return null;
+          const file = await blobToFile(item, `variant-${index}.jpg`);
+          return file;
+        }),
+      );
+
+      setImages(syncedFiles);
+
+      syncedFiles.forEach((file, index) => {
+        if (file && inputRefs.current[index]) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          inputRefs.current[index]!.files = dataTransfer.files;
+        }
+      });
+    };
+
+    syncImages();
   }, [variantImages]);
 
   return (

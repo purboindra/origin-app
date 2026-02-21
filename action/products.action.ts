@@ -7,8 +7,6 @@ import { FetchProductsParams } from "@/types/params.index";
 import { revalidateTag } from "next/cache";
 
 export async function createProduct(prevState: any, formData: FormData) {
-  console.log(Object.fromEntries(formData.entries()));
-
   const thumbnail_image = formData.get("thumbnail_image") as File;
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
@@ -25,7 +23,6 @@ export async function createProduct(prevState: any, formData: FormData) {
 
   while (formData.has(`variant_images.${imageIndex}`)) {
     const image = formData.get(`variant_images.${imageIndex}`);
-    console.log(image);
     if (image instanceof File && image.size > 0) {
       variantImages.push(image);
     }
@@ -59,9 +56,10 @@ export async function createProduct(prevState: any, formData: FormData) {
 
   try {
     const thumbnailImage = validateFields.data.thumbnail_image;
+    const thumbnailFileExt = thumbnailImage?.name.split(".").pop();
     const { data, error: thumbnailError } = await supabase.storage
       .from("products")
-      .upload(thumbnailImage!.name, thumbnailImage!);
+      .upload(`${crypto.randomUUID()}.${thumbnailFileExt}`, thumbnailImage!);
 
     if (thumbnailError) {
       console.error("Error upload thumbnail image", thumbnailError);
@@ -74,9 +72,10 @@ export async function createProduct(prevState: any, formData: FormData) {
 
     for (let i = 0; i < variantImages.length; i++) {
       const image = variantImages[i];
+      const variantImageFileExt = image?.name.split(".").pop();
       const { data, error: variantImageError } = await supabase.storage
         .from("products")
-        .upload(image.name, image);
+        .upload(`${crypto.randomUUID()}.${variantImageFileExt}`, image);
 
       if (variantImageError) {
         console.error("Error upload variant image", variantImageError);
@@ -158,20 +157,6 @@ export async function fetchProductById(id: string) {
         .publicUrl;
     };
 
-    const variantImagesUrl = firstData.variant_images.map((imagePath: string) =>
-      getPublicUrl(imagePath),
-    );
-
-    let variantImages: File[] = [];
-
-    for (let i = 0; i < variantImagesUrl.length; i++) {
-      const image = variantImagesUrl[i];
-      const file = await imageUrlToFile(image);
-      variantImages.push(file);
-    }
-
-    console.debug("Variant images", variantImages);
-
     const product = {
       id: firstData.id,
       category: firstData.categories,
@@ -180,7 +165,9 @@ export async function fetchProductById(id: string) {
       price: firstData.price,
       stock: firstData.stock,
       thumbnail_image: getPublicUrl(firstData.thumbnail_image),
-      variant_images: variantImages,
+      variant_images: firstData.variant_images.map((imagePath: string) =>
+        getPublicUrl(imagePath),
+      ),
       colors: firstData.colors,
     } as unknown as ProductInterface;
 
@@ -197,14 +184,6 @@ export async function fetchProductById(id: string) {
       success: false,
     };
   }
-}
-
-async function imageUrlToFile(imageUrl: string): Promise<File> {
-  const response = await fetch(imageUrl);
-  const blob = await response.blob();
-  const fileName = imageUrl.split("/").pop();
-  const file = new File([blob], fileName!, { type: "image/jpeg" });
-  return file;
 }
 
 export async function fetchProducts(params: FetchProductsParams) {
@@ -240,6 +219,8 @@ export async function fetchProducts(params: FetchProductsParams) {
     const { data: rawData, error } = await query
       .range(from, to)
       .order("created_at", { ascending: false });
+
+    console.debug("Raw data", rawData);
 
     if (error) {
       throw error;
@@ -293,13 +274,45 @@ export async function fetchProducts(params: FetchProductsParams) {
 
 export async function deleteProduct(id: number) {
   const supabase = await createClient();
-  await supabase.from("products").delete().eq("id", id);
+
+  const { data: product, error: fetchError } = await supabase
+    .from("products")
+    .select("thumbnail_image, variant_images")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) throw fetchError;
+  if (!product) throw new Error("Product not found");
+
+  const { error: deleteError } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) throw deleteError;
+
+  const filesToDelete = [
+    product.thumbnail_image,
+    ...(product.variant_images ?? []),
+  ].filter(Boolean);
+
+  if (filesToDelete.length > 0) {
+    const { error: storageError } = await supabase.storage
+      .from("products")
+      .remove(filesToDelete);
+
+    if (storageError) {
+      console.error("Storage cleanup failed:", storageError);
+    }
+  }
+
   revalidateTag("products", "max");
 }
 
 export async function editProduct(prevState: any, formData: FormData) {
   console.log(Object.fromEntries(formData.entries()));
 
+  const id = formData.get("id") as string;
   const thumbnail_image = formData.get("thumbnail_image") as File;
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
@@ -316,7 +329,6 @@ export async function editProduct(prevState: any, formData: FormData) {
 
   while (formData.has(`variant_images.${imageIndex}`)) {
     const image = formData.get(`variant_images.${imageIndex}`);
-    console.log(image);
     if (image instanceof File && image.size > 0) {
       variantImages.push(image);
     }
@@ -350,9 +362,13 @@ export async function editProduct(prevState: any, formData: FormData) {
 
   try {
     const thumbnailImage = validateFields.data.thumbnail_image;
+    const thumbnailImageFileExt = thumbnailImage?.name.split(".").pop();
     const { data, error: thumbnailError } = await supabase.storage
       .from("products")
-      .upload(thumbnailImage!.name, thumbnailImage!);
+      .upload(
+        `${crypto.randomUUID()}.${thumbnailImageFileExt}`,
+        thumbnailImage!,
+      );
 
     if (thumbnailError) {
       console.error("Error upload thumbnail image", thumbnailError);
@@ -365,9 +381,10 @@ export async function editProduct(prevState: any, formData: FormData) {
 
     for (let i = 0; i < variantImages.length; i++) {
       const image = variantImages[i];
+      const variantImageFileExt = image?.name.split(".").pop();
       const { data, error: variantImageError } = await supabase.storage
         .from("products")
-        .upload(image.name, image);
+        .upload(`${crypto.randomUUID()}.${variantImageFileExt}`, image);
 
       if (variantImageError) {
         console.error("Error upload variant image", variantImageError);
@@ -380,19 +397,22 @@ export async function editProduct(prevState: any, formData: FormData) {
     const { category, description, name, price, stock, thumbnail_image } =
       validateFields.data;
 
-    const { error } = await supabase.from("products").insert({
-      category_id: category,
-      name,
-      description,
-      stock,
-      price,
-      colors,
-      thumbnail_image: thumbnailImageUrl,
-      variant_images: variantImagesUrl,
-    });
+    const { error } = await supabase
+      .from("products")
+      .update({
+        category_id: category,
+        name,
+        description,
+        stock,
+        price,
+        colors,
+        thumbnail_image: thumbnailImageUrl,
+        variant_images: variantImagesUrl,
+      })
+      .eq("id", id);
 
     if (error) {
-      console.error("Error insert product", error);
+      console.error("Error update product", error);
       throw error;
     }
 
@@ -400,14 +420,14 @@ export async function editProduct(prevState: any, formData: FormData) {
 
     return {
       success: true,
-      message: "Product created successfully",
+      message: "Product updated successfully",
       timestamp: Date.now(),
     };
   } catch (error) {
-    console.error("Error create product", error);
+    console.error("Error update product", error);
     return {
       success: false,
-      message: "Product created successfully",
+      message: "Error updating product",
       timestamp: Date.now(),
     };
   }

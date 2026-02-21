@@ -35,8 +35,6 @@ export function CategoryOptions({ categoryId }: CategoryOptionsProps) {
   const [id, setId] = React.useState<number | null>(categoryId ?? null);
   const [open, setOpen] = React.useState(false);
 
-  console.log("Category options", categoryId);
-
   if (error) return <div>Failed to load categories</div>;
 
   if (!categories || (Array.isArray(categories) && categories.length === 0))

@@ -21,7 +21,7 @@ export default function CreateProductsContent() {
     if (isSuccess) {
       toast.success(state.message);
       redirect("/dashboard/products");
-    } else {
+    } else if (state.message) {
       toast.error(state.message);
     }
   }, [state]);

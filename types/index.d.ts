@@ -32,7 +32,7 @@ export interface ProductInterface {
   description: string;
   price: number;
   stock: number;
-  thumbnail_image: string | null;
+  thumbnail_image: File | null;
   variant_images: File[];
   colors: string[];
   category: CategoryInterface;

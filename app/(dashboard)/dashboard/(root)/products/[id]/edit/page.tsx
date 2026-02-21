@@ -18,8 +18,6 @@ export default async function DashboardProducts({
     );
   }
 
-  console.log("Product by id", data);
-
   return (
     <section className="w-full min-h-screen px-8 py-8">
       <EditProductsContent product={data!} />

@@ -18,3 +18,9 @@ export const fileToDataURL = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
   });
 };
+
+export const blobToFile = async (imageUrl: string, fileName: string) => {
+  const response = await fetch(imageUrl);
+  const blob = await response.blob();
+  return new File([blob], fileName, { type: blob.type });
+};

@@ -52,7 +52,9 @@ export const productColumns: ColumnDef<ProductInterface>[] = [
   {
     accessorKey: "category",
     header: "Kategory",
-    cell: ({ row }) => <div className="w-16">{row.getValue("category")}</div>,
+    cell: ({ row }) => (
+      <div className="w-16">{row.original.category.label}</div>
+    ),
   },
   {
     accessorKey: "price",
