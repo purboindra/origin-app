@@ -5,7 +5,7 @@ import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface ThumbnailImageFormProps {
-  thumbnailImage: File | Blob | string | null;
+  thumbnailImage: string | null;
 }
 
 export default function ThumbnailImageForm({
@@ -20,18 +20,10 @@ export default function ThumbnailImageForm({
 
       let fileToSync: File | null = null;
 
-      if (thumbnailImage instanceof File) {
-        fileToSync = thumbnailImage;
-      } else if (thumbnailImage instanceof Blob) {
-        fileToSync = new File([thumbnailImage], "thumbnail.jpg", {
-          type: thumbnailImage.type,
-        });
-      } else if (typeof thumbnailImage === "string") {
-        try {
-          fileToSync = await blobToFile(thumbnailImage, "thumbnail.jpg");
-        } catch (error) {
-          console.error("Error fetching image URL:", error);
-        }
+      try {
+        fileToSync = await blobToFile(thumbnailImage, "thumbnail.jpg");
+      } catch (error) {
+        console.error("Error fetching image URL:", error);
       }
 
       if (fileToSync) {

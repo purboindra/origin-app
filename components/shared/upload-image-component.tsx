@@ -4,8 +4,8 @@ import ThumbnailImageForm from "./thumbnail-image-form";
 import VariantImagesForm from "./variant-images-form";
 
 interface UploadImageComponentProps {
-  thumbnailImage: File | null;
-  variantImages: File[] | null;
+  thumbnailImage: string | null;
+  variantImages: string[] | null;
 }
 
 export default function UploadImageComponent({
