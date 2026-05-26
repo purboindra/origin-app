@@ -4,7 +4,7 @@ import ThumbnailImageForm from "./thumbnail-image-form";
 import VariantImagesForm from "./variant-images-form";
 
 interface UploadImageComponentProps {
-  thumbnailImage: File | Blob | string | null;
+  thumbnailImage: string | null;
   variantImages: string[] | null;
 }
 
