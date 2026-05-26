@@ -11,13 +11,13 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Button } from "../ui/button";
 import { Field } from "../ui/field";
 
-interface CalorOptionsFormProps {
+interface ColorOptionsFormProps {
   initialColors?: string[];
 }
 
-export default function CalorOptionsForm({
+export default function ColorOptionsForm({
   initialColors,
-}: CalorOptionsFormProps) {
+}: ColorOptionsFormProps) {
   const [color, setColor] = React.useState("#aabbcc");
   const [open, setOpen] = React.useState(false);
   const [colors, setColors] = React.useState<string[]>(initialColors ?? []);

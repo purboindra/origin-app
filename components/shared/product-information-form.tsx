@@ -2,8 +2,8 @@ import { ProductInterface } from "@/types";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { CategoryOptions } from "./category-options";
-import CalorOptionsForm from "./color-options-form";
-import { SubmitButtonCreatePruduct } from "./submit-button-create-pruduct";
+import ColorOptionsForm from "./color-options-form";
+import { SubmitButtonCreateProduct } from "./submit-button-create-product";
 
 interface ProductInformationFormProps {
   product?: ProductInterface;
@@ -49,9 +49,9 @@ export default function ProductInformationForm({
       />
       <div className="flex space-x-12">
         <CategoryOptions categoryId={product?.category.id} />
-        <CalorOptionsForm initialColors={product?.colors} />
+        <ColorOptionsForm initialColors={product?.colors} />
       </div>
-      <SubmitButtonCreatePruduct />
+      <SubmitButtonCreateProduct />
     </div>
   );
 }

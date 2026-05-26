@@ -4,24 +4,55 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { loginSchema } from "@/lib/validation";
+import { z } from "zod";
 
-export async function login(formData: FormData) {
+export async function login(prevState: any, formData: FormData) {
   const supabase = await createClient();
 
+  const email = String(formData.get("email"));
+  const password = String(formData.get("password"));
+
+  const validatedFields = loginSchema.safeParse({
+    email,
+    password,
+  });
+
+  if (!validatedFields.success) {
+    const flattened = validatedFields.error.flatten();
+    return {
+      message: "",
+      timestamp: Date.now(),
+      success: false,
+      email: flattened.fieldErrors.email,
+      password: flattened.fieldErrors.password,
+      values: { email },
+    };
+  }
+
   const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
+    email,
+    password,
   };
 
   const { error, data: userData } =
     await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/error");
+    return {
+      message: error.message,
+      timestamp: Date.now(),
+      success: false,
+      values: { email },
+    };
   }
 
   revalidatePath("/dashboard", "layout");
-  redirect("/dashboard");
+  return {
+    message: "Login success",
+    timestamp: Date.now(),
+    success: true,
+  };
 }
 
 export async function signup(formData: FormData) {

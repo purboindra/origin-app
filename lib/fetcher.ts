@@ -1,5 +1,5 @@
-export const fetcher = (...args) =>
-  fetch(...args).then(async (res) => {
+export const fetcher = (url: string) =>
+  fetch(url).then(async (res) => {
     if (!res.ok) {
       return await res.json();
     }

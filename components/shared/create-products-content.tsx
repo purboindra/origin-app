@@ -15,10 +15,8 @@ const initialState = {
 
 export default function CreateProductsContent() {
   const [state, dispatch] = useActionState(createProduct, initialState);
-
   React.useEffect(() => {
-    const isSuccess = state.success;
-    if (isSuccess) {
+    if (state.success) {
       toast.success(state.message);
       redirect("/dashboard/products");
     } else if (state.message) {

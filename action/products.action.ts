@@ -50,11 +50,10 @@ export async function createProduct(prevState: any, formData: FormData) {
     variant_images: variantImages,
   });
 
-  if (!validateFields.success) {
-    throw new Error(validateFields.error.message);
-  }
-
   try {
+    if (!validateFields.success) {
+      throw new Error(validateFields.error.message);
+    }
     const thumbnailImage = validateFields.data.thumbnail_image;
     const thumbnailFileExt = thumbnailImage?.name.split(".").pop();
     const { data, error: thumbnailError } = await supabase.storage
@@ -85,8 +84,7 @@ export async function createProduct(prevState: any, formData: FormData) {
       variantImagesUrl.push(data.path);
     }
 
-    const { category, description, name, price, stock, thumbnail_image } =
-      validateFields.data;
+    const { category, description, name, price, stock } = validateFields.data;
 
     const { error } = await supabase.from("products").insert({
       category_id: category,
@@ -115,7 +113,7 @@ export async function createProduct(prevState: any, formData: FormData) {
     console.error("Error create product", error);
     return {
       success: false,
-      message: "Product created successfully",
+      message: "Error creating product",
       timestamp: Date.now(),
     };
   }
@@ -220,8 +218,6 @@ export async function fetchProducts(params: FetchProductsParams) {
       .range(from, to)
       .order("created_at", { ascending: false });
 
-    console.debug("Raw data", rawData);
-
     if (error) {
       throw error;
     }
@@ -310,8 +306,6 @@ export async function deleteProduct(id: number) {
 }
 
 export async function editProduct(prevState: any, formData: FormData) {
-  console.log(Object.fromEntries(formData.entries()));
-
   const id = formData.get("id") as string;
   const thumbnail_image = formData.get("thumbnail_image") as File;
   const name = formData.get("name") as string;
@@ -394,8 +388,7 @@ export async function editProduct(prevState: any, formData: FormData) {
       variantImagesUrl.push(data.path);
     }
 
-    const { category, description, name, price, stock, thumbnail_image } =
-      validateFields.data;
+    const { category, description, name, price, stock } = validateFields.data;
 
     const { error } = await supabase
       .from("products")

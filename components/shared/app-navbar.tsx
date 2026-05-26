@@ -51,7 +51,7 @@ export function AppNavbar({ user }: AppNavbarInterface) {
       </div>
 
       <div className="flex space-x-4 justify-end hover:cursor-pointer">
-        <div className="h-8 w-8 md:h-12 md:w-12 relative">
+        <div className="h-8 w-8 md:h-12 md:w-12 relative bg-red-200 rounded-md">
           <div className=" rounded-md absolute bottom-0 h-full w-full" />
           <div className=" absolute transform translate-x-1/2 translate-y-1/2 w-6 h-6">
             <Image
