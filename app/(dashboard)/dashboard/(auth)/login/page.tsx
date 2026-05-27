@@ -2,6 +2,7 @@ import { loginWithGoogle } from "@/action/auth.action";
 import LoginForm from "@/components/forms/login-form";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+
 export default function Login() {
   return (
     <main className="flex w-full min-h-screen">

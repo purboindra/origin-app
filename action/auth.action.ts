@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { loginSchema } from "@/lib/validation";
-import { z } from "zod";
 
 export async function login(prevState: any, formData: FormData) {
   const supabase = await createClient();
@@ -55,7 +54,7 @@ export async function login(prevState: any, formData: FormData) {
   };
 }
 
-export async function signup(formData: FormData) {
+export async function register(formData: FormData) {
   const supabase = await createClient();
 
   const data = {
@@ -94,4 +93,24 @@ export async function loginWithGoogle() {
   if (data.url) {
     redirect(data.url);
   }
+}
+
+export async function signOut() {
+  const supabase = await createClient();
+  const response = await supabase.auth.signOut();
+
+  if (response.error) {
+    return {
+      message: response.error.message,
+      timestamp: Date.now(),
+      success: false,
+    };
+  }
+
+  revalidatePath("/", "layout");
+  return {
+    message: "Logout success",
+    timestamp: Date.now(),
+    success: true,
+  };
 }

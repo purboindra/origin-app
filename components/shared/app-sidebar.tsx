@@ -1,5 +1,6 @@
 "use client";
 
+import { signOut } from "@/action/auth.action";
 import LoadingIndicator from "@/app/loading-indicator";
 import {
   Sidebar,
@@ -12,7 +13,9 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 
 // Menu items.
 const items = [
@@ -48,8 +51,27 @@ const items = [
   },
 ];
 
+const initialState = {
+  message: "",
+  timestamp: 0,
+  success: false,
+};
+
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const [state, dispatch, isPending] = useActionState(signOut, initialState);
+
+  console.log(state);
+
+  useEffect(() => {
+    if (state.success) {
+      router.push("/dashboard/login");
+    } else if (state.message) {
+      toast.error(state.message);
+    }
+  }, [state]);
 
   return (
     <Sidebar className="pt-30">
@@ -58,8 +80,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
-                const isActive =
-                  item.url === pathname;
+                const isActive = item.url === pathname;
                 return (
                   <SidebarMenuItem
                     key={item.title}
@@ -69,23 +90,32 @@ export function AppSidebar() {
                   >
                     <SidebarMenuButton asChild className="hover:bg-transparent">
                       {item.title === "Keluar" ? (
-                        <button className="hover:cursor-pointer">
-                          <Image
-                            src={item.icon}
-                            alt={item.title}
-                            width={24}
-                            height={24}
-                            className="w-6 h-6 invert text-white"
-                          />
-                          <span
-                            className={`text-base font-semibold ${
-                              isActive ? "text-white" : "text-gray-800"
-                            }`}
+                        <form
+                          action={dispatch}
+                          className="hover:cursor-pointer"
+                        >
+                          <button
+                            type="submit"
+                            disabled={isPending}
+                            className="flex"
                           >
-                            {item.title}
-                          </span>
-                          <LoadingIndicator />
-                        </button>
+                            <Image
+                              src={item.icon}
+                              alt={item.title}
+                              width={24}
+                              height={24}
+                              className="w-6 h-6 invert text-white"
+                            />
+                            <span
+                              className={`text-base font-semibold ${
+                                isActive ? "text-white" : "text-gray-800"
+                              }`}
+                            >
+                              {item.title}
+                            </span>
+                          </button>
+                          {isPending ? <LoadingIndicator /> : null}
+                        </form>
                       ) : (
                         <Link href={item.url} prefetch={false}>
                           <Image
