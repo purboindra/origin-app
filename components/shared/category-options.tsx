@@ -27,20 +27,22 @@ interface CategoryOptionsProps {
 
 export function CategoryOptions({ categoryId }: CategoryOptionsProps) {
   const {
-    data: categories,
+    data: response,
     error,
     isLoading,
-  } = useSWR<CategoryInterface[]>("/api/categories", fetcher);
+  } = useSWR<{ message: string; data: CategoryInterface[] }>("/api/categories", fetcher);
+
+  const categories = response?.data;
 
   const [id, setId] = React.useState<number | null>(categoryId ?? null);
   const [open, setOpen] = React.useState(false);
 
-  if (error) return <div>Failed to load categories</div>;
+  if (error) return <div>{`Failed to load categories: ${error}`}</div>;
+
+  if (isLoading) return <div>Loading...</div>;
 
   if (!categories || (Array.isArray(categories) && categories.length === 0))
     return <div>No Data Found</div>;
-
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

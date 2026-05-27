@@ -24,6 +24,7 @@ export default function ProductInformationForm({
         autoComplete="off"
         defaultValue={product?.name}
         required
+        placeholder="Product name"
       />
       <div className="flex gap-6">
         <Input
@@ -34,6 +35,7 @@ export default function ProductInformationForm({
           defaultValue={product?.price}
           required
           type="number"
+          placeholder="Product price"
         />
         <Input
           className="rounded-md"
@@ -43,6 +45,7 @@ export default function ProductInformationForm({
           defaultValue={product?.stock}
           required
           type="number"
+          placeholder="Product stock"
         />
       </div>
       <Textarea
@@ -52,6 +55,7 @@ export default function ProductInformationForm({
         autoComplete="off"
         defaultValue={product?.description}
         required
+        placeholder="Product description"
       />
       <div className="flex space-x-12">
         <CategoryOptions categoryId={product?.category.id} />
